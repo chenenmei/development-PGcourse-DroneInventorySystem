@@ -185,7 +185,12 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
      * @return すべてのフィールドがnullまたは空の場合はtrue、それ以外はfalse
      */
     private boolean isAllFieldsEmpty(CenterInfoForm form) {
-        // センター名または都道府県がnullまたは空の場合にtrueを返す
-        return form.getCenterName().isEmpty() && form.getRegion().isEmpty();
+        // センター名、都道府県、容量Fromと容量Toが全てnullまたは空の場合にtrueを返す
+        boolean centerNameEmpty = form.getCenterName() == null || form.getCenterName().isEmpty();
+        boolean regionEmpty = form.getRegion() == null || form.getRegion().isEmpty();
+        boolean capacityFromEmpty = form.getStorageCapacityFrom() == null;
+        boolean capacityToEmpty = form.getStorageCapacityTo() == null;
+        
+        return centerNameEmpty && regionEmpty && capacityFromEmpty && capacityToEmpty;
     }
 }

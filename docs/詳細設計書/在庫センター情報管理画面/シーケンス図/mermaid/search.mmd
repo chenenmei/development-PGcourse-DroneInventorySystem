@@ -4,24 +4,49 @@ sequenceDiagram
     participant Controller as CenterInfoController
     participant Service as CenterInfoService
     participant Repository as CenterInfoRepository(DB)
+    participant DTO as ApiResponseDto
 
     User->>Frontend: 容量From/To入力
     Frontend->>Frontend: 入力値のリアルタイム検証
-    alt 入力不正
+    alt 入力不正（クライアント側バリデーション）
         Frontend-->>User: エラーメッセージ表示
     else 入力正常
         User->>Frontend: 検索ボタン押下
         Frontend->>Controller: Ajaxで検索条件送信
-        Controller->>Service: 検索条件を渡す
-        Service->>Repository: DBクエリ実行
-        Repository-->>Service: 検索結果返却
-        Service-->>Controller: 検索結果返却
-        alt 結果あり
-            Controller-->>Frontend: 検索結果JSON返却
-            Frontend->>Frontend: 画面リストを更新
-            Frontend-->>User: 操作完了のポップアップ表示
-        else 結果なし
-            Controller-->>Frontend: 空の結果またはメッセージ返却
-            Frontend-->>User: 「該当データなし」メッセージ表示
+        alt バリデーションエラー（400 Bad Request）
+            Controller-->>Frontend: エラーDTO返却(status=400)
+            Frontend-->>User: バリデーションエラーメッセージ表示
+        else バリデーションOK
+            Controller->>Service: 検索条件を渡す
+            alt ビジネスロジックエラー（400 Bad Request）
+                Service-->>Controller: ビジネス例外をスロー
+                Controller->>DTO: エラーDTO生成(400)
+                DTO-->>Controller: エラーDTOを返却
+                Controller-->>Frontend: エラーDTO返却(status=400)
+                Frontend-->>User: ビジネスエラーメッセージ表示
+            else ビジネスロジックOK
+                Service->>Repository: DBクエリ実行
+                alt DB処理エラー（500 Internal Server Error）
+                    Repository--xService: 例外をスロー
+                    Service--xController: 例外をスロー
+                    Controller->>DTO: サーバーエラーDTO生成(500)
+                    DTO-->>Controller: エラーDTOを返却
+                    Controller-->>Frontend: エラーDTO返却(status=500)
+                    Frontend-->>User: サーバーエラーメッセージ表示
+                else DB処理正常
+                    Repository-->>Service: 検索結果返却
+                    Service-->>Controller: 検索結果返却
+                    Controller->>DTO: 成功レスポンスDTO生成(200)
+                    DTO-->>Controller: 成功DTOを返却
+                    alt 結果あり
+                        Controller-->>Frontend: 成功DTO返却(results=データリスト)
+                        Frontend->>Frontend: 画面リストを更新
+                        Frontend-->>User: 成功メッセージ表示(xx件のデータが見つかりました)
+                    else 結果なし
+                        Controller-->>Frontend: 成功DTO返却(results=空リスト)
+                        Frontend-->>User: 「該当データなし」メッセージ表示
+                    end
+                end
+            end
         end
     end
