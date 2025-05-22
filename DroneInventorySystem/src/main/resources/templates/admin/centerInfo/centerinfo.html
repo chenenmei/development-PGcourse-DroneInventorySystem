@@ -6,11 +6,37 @@
   <head>
     <title>InvenTrack</title>
     <!-- Alpine.jsをCDNから読み込み -->
-    <script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.3/dist/cdn.min.js" defer></script>
+    <style>
+      /* ローディング状態の視覚的制御 */
+      body.searching .spinner-border {
+        display: block !important;
+      }
+      
+      /* デバッグ用スタイル */
+      .debug-info {
+        margin-top: 10px;
+        padding: 8px;
+        background-color: #f8f9fc;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
   </head>
 
   <body>
-	<div class="card shadow mb-4" x-data="centerInfoComponent">
+	<div class="card shadow mb-4" 
+		x-data="centerInfoComponent" 
+		x-init="
+			console.log('コンポーネント初期化開始');
+			$nextTick(() => { 
+				init();
+				console.log('コンポーネント初期化完了');
+			})
+		">
 
 		<div class="card-header py-3">
 			<h6 class="m-0 font-weight-bold text-primary">在庫センター情報</h6>
@@ -73,13 +99,15 @@
  			
 			<!-- 在庫センター情報テーブル -->
 			<div class="table-responsive">
+				<!-- ローディング表示 -->
 				<div x-show="isLoading" class="text-center my-3">
 					<div class="spinner-border text-primary" role="status">
 						<span class="sr-only">Loading...</span>
 					</div>
 				</div>
 				
-				<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" x-show="!isLoading">
+				<!-- データテーブル -->
+				<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" x-show="!isLoading && !isResultEmpty">
 					<thead>
 						<tr>
 							<th>センター名</th>
@@ -91,27 +119,30 @@
 						</tr>
 					</thead>
 					<tbody>
+						<!-- 初期表示データ -->
 						<template x-if="!isAjaxSearch">
-							<template x-for="item in centerInfoList">
+							<template x-for="(item, index) in centerInfoList" :key="index">
 								<tr>
-									<td x-text="item.centerName"></td>
-									<td x-text="item.address"></td>
-									<td x-text="item.phoneNumber"></td>
-									<td x-text="item.managerName"></td>
-									<td x-text="item.maxStorageCapacity"></td>
-									<td x-text="item.currentStorageCapacity"></td>
+									<td x-text="item.centerName || ''"></td>
+									<td x-text="item.address || ''"></td>
+									<td x-text="item.phoneNumber || ''"></td>
+									<td x-text="item.managerName || ''"></td>
+									<td x-text="item.maxStorageCapacity || ''"></td>
+									<td x-text="item.currentStorageCapacity || ''"></td>
 								</tr>
 							</template>
 						</template>
+						
+						<!-- 検索結果データ -->
 						<template x-if="isAjaxSearch">
-							<template x-for="item in ajaxResults">
+							<template x-for="(item, index) in ajaxResults" :key="index">
 								<tr>
-									<td x-text="item.centerName"></td>
-									<td x-text="item.address"></td>
-									<td x-text="item.phoneNumber"></td>
-									<td x-text="item.managerName"></td>
-									<td x-text="item.maxStorageCapacity"></td>
-									<td x-text="item.currentStorageCapacity"></td>
+									<td x-text="item.centerName || ''"></td>
+									<td x-text="item.address || ''"></td>
+									<td x-text="item.phoneNumber || ''"></td>
+									<td x-text="item.managerName || ''"></td>
+									<td x-text="item.maxStorageCapacity || ''"></td>
+									<td x-text="item.currentStorageCapacity || ''"></td>
 								</tr>
 							</template>
 						</template>
@@ -120,15 +151,50 @@
 			</div>
 			
 	        <!-- 検索結果がない場合のメッセージ -->
-			<div x-show="isResultEmpty" class="text-muted mt-3">
+			<div x-show="!isLoading && isResultEmpty" class="text-muted mt-3">
 			    <p>検索結果がありません。</p>
+			</div>
+			
+			<!-- デバッグ情報 (開発中のみ表示) -->
+			<div class="debug-info mt-4">
+			    <h6>システム状態（デバッグ用）:</h6>
+			    <div>
+			        <strong>ローディング:</strong> <span x-text="isLoading"></span>
+			    </div>
+			    <div>
+			        <strong>AJAX検索中:</strong> <span x-text="isAjaxSearch"></span>
+			    </div>
+			    <div>
+			        <strong>初期データ件数:</strong> <span x-text="centerInfoList.length"></span>
+			    </div>
+			    <div>
+			        <strong>検索結果件数:</strong> <span x-text="ajaxResults.length"></span>
+			    </div>
+			    <div>
+			        <strong>結果なしフラグ:</strong> <span x-text="isResultEmpty"></span>
+			    </div>
+			    <div>
+			        <button class="btn btn-sm btn-secondary mt-2" @click="init(); console.log('初期化再実行')">
+			            状態再初期化
+			        </button>
+			    </div>
 			</div>
 		</div>
 	</div>
 	
 	  
+  <!-- 初期データをJSON形式で埋め込む (コントローラーから渡されたJSONを使用) -->
+  <script type="text/javascript" th:inline="javascript">
+    // 初期データをJavaScriptオブジェクトとして直接埋め込む
+    window.initialCenterData = /*[[${centerInfoJson}]]*/ '[]';
+  </script>
+  
   <script>
   document.addEventListener('alpine:init', () => {
+    console.log('Alpine初期化イベント発火');
+    // Alpine.jsが初期化されたらコンポーネントを登録
+    Alpine.data('centerInfoComponent', () => ({
+      // データ初期化
       Alpine.data('centerInfoComponent', () => ({
           // データ初期化
           searchParams: {
@@ -154,8 +220,81 @@
           
           // 初期化処理
           init() {
-              // サーバーから初期データを取得
-              this.centerInfoList = JSON.parse(document.getElementById('initialData')?.value || '[]');
+              console.log('Alpineコンポーネント初期化');
+              
+              // 初期状態をリセット
+              this.isLoading = false;
+              this.isAjaxSearch = false;
+              this.centerInfoList = [];
+              this.ajaxResults = [];
+              
+              try {
+                  console.log('初期データ読み込み試行');
+                  
+                  // 方法1: グローバル変数から読み込み
+                  if (window.initialCenterData) {
+                      console.log('グローバル変数から初期データ取得');
+                      
+                      let parsedData;
+                      if (typeof window.initialCenterData === 'string') {
+                          parsedData = JSON.parse(window.initialCenterData);
+                          console.log('文字列からJSONパース完了');
+                      } else {
+                          parsedData = window.initialCenterData;
+                          console.log('既にオブジェクトとして取得');
+                      }
+                      
+                      if (Array.isArray(parsedData)) {
+                          this.centerInfoList = parsedData;
+                          console.log('配列データとして処理:', this.centerInfoList.length + '件');
+                      } else if (parsedData && parsedData.results && Array.isArray(parsedData.results)) {
+                          this.centerInfoList = parsedData.results;
+                          console.log('results配列として処理:', this.centerInfoList.length + '件');
+                      } else {
+                          console.warn('グローバルデータの形式が不明:', parsedData);
+                      }
+                  } 
+                  // 方法2: hidden要素から読み込み (バックアップ方法)
+                  else {
+                      console.log('hidden要素から初期データ取得を試行');
+                      const initialDataElement = document.getElementById('initialData');
+                      
+                      if (!initialDataElement) {
+                          console.error("initialData要素が見つかりません");
+                          return;
+                      }
+                      
+                      const jsonData = initialDataElement.value;
+                      console.log("初期JSONデータ取得:", jsonData ? "データあり" : "データなし");
+                      
+                      if (jsonData && jsonData.trim() !== '') {
+                          // JSONデータをパース
+                          const parsedData = JSON.parse(jsonData);
+                          console.log("JSONパース結果:", parsedData);
+                          
+                          if (Array.isArray(parsedData)) {
+                              this.centerInfoList = parsedData;
+                          } else if (parsedData && parsedData.results && Array.isArray(parsedData.results)) {
+                              this.centerInfoList = parsedData.results;
+                          } else {
+                              this.centerInfoList = [];
+                          }
+                          
+                          console.log("初期データ読み込み成功:", this.centerInfoList.length + "件");
+                      } else {
+                          this.centerInfoList = [];
+                          console.warn("初期データが空です");
+                      }
+                  }
+              } catch (error) {
+                  console.error("初期データの解析エラー:", error);
+                  this.centerInfoList = [];
+                  this.notification = {
+                      show: true,
+                      message: "データの読み込み中にエラーが発生しました",
+                      type: "danger"
+                  };
+              }
           },
           
           // 数値入力のバリデーション
@@ -201,32 +340,45 @@
           
           // 検索結果が空かどうか
           get isResultEmpty() {
-              return (this.isAjaxSearch && this.ajaxResults.length === 0) || 
-                     (!this.isAjaxSearch && this.centerInfoList.length === 0);
+              if (this.isAjaxSearch) {
+                  console.log('AJAX検索モード: 結果数=', this.ajaxResults.length);
+                  return !this.ajaxResults || this.ajaxResults.length === 0;
+              } else {
+                  console.log('初期表示モード: 結果数=', this.centerInfoList.length);
+                  return !this.centerInfoList || this.centerInfoList.length === 0;
+              }
           },
           
           // 非同期検索処理
           async searchCenters() {
+              console.log('検索処理開始');
+              
               // バリデーションチェック
               if (this.isSearchButtonDisabled) {
+                  console.log('検索条件が無効: 検索中止');
                   return;
               }
               
               // リアルタイムバリデーション
               if (!this.validateFromTo()) {
+                  console.log('From-Toの検証に失敗: 検索中止');
                   return;
               }
               
+              // 検索状態を設定
+              console.log('検索中フラグ設定: isLoading=true');
+              document.querySelector('body').classList.add('searching');
               this.isLoading = true;
               this.isAjaxSearch = true;
+              this.ajaxResults = []; // 検索開始時に結果をクリア
               
               try {
                   // URL パラメータの作成
                   const params = new URLSearchParams({
-                      centerName: this.searchParams.centerName,
-                      region: this.searchParams.region,
-                      storageCapacityFrom: this.searchParams.storageCapacityFrom,
-                      storageCapacityTo: this.searchParams.storageCapacityTo
+                      centerName: this.searchParams.centerName || '',
+                      region: this.searchParams.region || '',
+                      storageCapacityFrom: this.searchParams.storageCapacityFrom || '',
+                      storageCapacityTo: this.searchParams.storageCapacityTo || ''
                   });
                   
                   // API リクエスト
@@ -239,16 +391,47 @@
                   
                   // レスポンスデータを解析
                   const data = await response.json();
+                  console.log("API Response:", data); // デバッグ用
                   
                   // HTTPステータスコードに基づいた処理
                   if (response.ok) {
                       // 200番台の成功レスポンス
-                      this.ajaxResults = data.results || data;
+                      // ApiResponseDtoの構造に合わせて結果を取得
+                      console.log('APIレスポンス詳細:', data);
+                      
+                      // 様々なレスポンス形式に対応
+                      if (data.results) {
+                          // ApiResponseDtoの標準形式
+                          this.ajaxResults = data.results;
+                          console.log('結果を格納(results):', this.ajaxResults.length + '件');
+                      } else if (Array.isArray(data)) {
+                          // 直接配列が返される場合
+                          this.ajaxResults = data;
+                          console.log('結果を格納(array):', this.ajaxResults.length + '件');
+                      } else if (data && typeof data === 'object') {
+                          // その他のオブジェクト形式（プロパティを探索）
+                          const possibleResultsFields = ['data', 'items', 'content', 'list'];
+                          for (const field of possibleResultsFields) {
+                              if (data[field] && Array.isArray(data[field])) {
+                                  this.ajaxResults = data[field];
+                                  console.log(`結果を格納(${field}):`, this.ajaxResults.length + '件');
+                                  break;
+                              }
+                          }
+                          
+                          if (this.ajaxResults.length === 0) {
+                              console.warn('結果フィールドが見つかりませんでした:', data);
+                              this.ajaxResults = [];
+                          }
+                      } else {
+                          this.ajaxResults = [];
+                          console.warn('不明なレスポンス形式:', data);
+                      }
                       
                       // 成功通知
                       this.notification = {
                           show: true,
-                          message: data.message || '検索が完了しました',
+                          message: data.message || `検索が完了しました (${this.ajaxResults.length}件)`,
                           type: 'success'
                       };
                   } else {
@@ -288,16 +471,37 @@
                   
                   this.ajaxResults = [];
               } finally {
+                  console.log('検索処理完了: ローディング状態解除');
                   this.isLoading = false;
+                  document.querySelector('body').classList.remove('searching');
+                  
+                  // 検索結果の状態を確認
+                  console.log('検索結果状態:', {
+                      isLoading: this.isLoading,
+                      isAjaxSearch: this.isAjaxSearch,
+                      resultCount: this.ajaxResults.length,
+                      isEmpty: this.isResultEmpty
+                  });
+                  
+                  // DOMの強制更新（Alpine.jsのリアクティビティが機能していない場合のバックアップ）
+                  setTimeout(() => {
+                      console.log('DOM強制更新');
+                      this.isLoading = false;
+                  }, 100);
               }
           }
       }));
-  });
+      console.log('コンポーネント定義完了');
+    }
+  })();
   </script>
   
-  <!-- 初期データをJSON形式で埋め込む -->
-  <template th:remove="tag">
-      <input type="hidden" id="initialData" th:value="${#objects.nullSafe(#strings.escapeJavaScript(#objects.nullSafe(#objects.json.serialize(centerInfoList), '[]')), '[]')}">
-  </template>
+  <!-- 初期データをJSON形式で埋め込む (コントローラーから渡されたJSONを使用) -->
+  <script type="text/javascript" th:inline="javascript">
+    // 初期データをJavaScriptオブジェクトとして直接埋め込む
+    window.initialCenterData = /*[[${centerInfoJson}]]*/ '[]';
+    console.log('初期データ埋め込み:', window.initialCenterData ? '成功' : '失敗');
+  </script>
+  <input type="hidden" id="initialData" th:value="${centerInfoJson}">
   </body>
 </html>

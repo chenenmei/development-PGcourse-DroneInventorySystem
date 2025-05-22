@@ -26,9 +26,11 @@ import com.digitalojt.web.exception.BusinessLogicException;
 import com.digitalojt.web.exception.ResourceNotFoundException;
 import com.digitalojt.web.form.CenterInfoForm;
 import com.digitalojt.web.service.CenterInfoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 在庫センター情報画面のコントローラークラス
@@ -37,7 +39,6 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @Controller
-@RequiredArgsConstructor
 public class CenterInfoController extends AbstractController {
 
 	/** センター情報 サービス */
@@ -45,6 +46,22 @@ public class CenterInfoController extends AbstractController {
 	
 	/** ロガー */
 	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CenterInfoController.class);
+
+	// Jackson ObjectMapper
+	private final ObjectMapper objectMapper;
+	
+	/**
+     * コンストラクタ
+     * 
+     * @param centerInfoService センター情報サービス
+     */
+	public CenterInfoController(CenterInfoService centerInfoService) {
+		this.centerInfoService = centerInfoService;
+		// ObjectMapperの設定
+		this.objectMapper = new ObjectMapper()
+				.registerModule(new JavaTimeModule())
+				.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+	}
 
 	/**
 	 * 都道府県Enumをリストに変換
@@ -71,6 +88,30 @@ public class CenterInfoController extends AbstractController {
 
 		// 画面表示用に商品情報リストをセット
 		model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST, centerInfoList);
+		
+		// centerInfoListをJSON文字列に変換してモデルに追加
+		try {
+			// デバッグ情報
+			logger.debug("JSON変換前のデータ件数: {}", centerInfoList.size());
+			
+			// JSON文字列に変換
+			String centerInfoJson = objectMapper.writeValueAsString(centerInfoList);
+			
+			// デバッグログ
+			if (centerInfoList.isEmpty()) {
+				logger.debug("変換されたJSON (空リスト): []");
+			} else {
+				logger.debug("変換されたJSON（一部）: {}", 
+					centerInfoJson.length() > 100 ? centerInfoJson.substring(0, 100) + "..." : centerInfoJson);
+			}
+			
+			model.addAttribute("centerInfoJson", centerInfoJson);
+		} catch (Exception e) {
+			// JSON変換エラー
+			logException(LogMessage.HTTP_GET, "JSON変換エラー: " + e.getMessage());
+			logger.error("JSON変換エラーの詳細", e);
+			model.addAttribute("centerInfoJson", "[]");
+		}
 
 		logEnd(LogMessage.HTTP_GET);
 
@@ -108,6 +149,15 @@ public class CenterInfoController extends AbstractController {
 					form.getStorageCapacityFrom(),
 					form.getStorageCapacityTo());
 	
+			// デバッグ：検索結果のJSONシリアライズ確認
+			try {
+				logger.debug("JSON変換前の検索結果: {} 件", centerInfoList.size());
+				String resultJson = objectMapper.writeValueAsString(centerInfoList);
+				logger.debug("検索結果のJSON変換: {} 文字", resultJson.length());
+			} catch (Exception ex) {
+				logger.warn("検索結果のJSON変換デバッグ中にエラー", ex);
+			}
+			
 			logEnd(LogMessage.HTTP_GET);
 			
 			// 検索結果がない場合は、成功レスポンスを空リストで返却
@@ -167,6 +217,16 @@ public class CenterInfoController extends AbstractController {
 			// 画面表示用に在庫センター情報リストをセット
 			model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST, centerInfoList);
 			
+			// centerInfoListをJSON文字列に変換してモデルに追加
+			try {
+				String centerInfoJson = objectMapper.writeValueAsString(centerInfoList);
+				model.addAttribute("centerInfoJson", centerInfoJson);
+			} catch (Exception e) {
+				// JSON変換エラー
+				logException(LogMessage.HTTP_GET, "JSON変換エラー: " + e.getMessage());
+				model.addAttribute("centerInfoJson", "[]");
+			}
+			
 			// 検索結果が空の場合
 			if (centerInfoList.isEmpty()) {
 				model.addAttribute("infoMessage", "該当するデータはありません");
@@ -188,6 +248,23 @@ public class CenterInfoController extends AbstractController {
 		}
 	}
 	
+	/**
+	 * 検索結果をJSON形式で返却（APIエンドポイント用）
+	 * 
+	 * @param form
+	 * @return
+	 */
+	@GetMapping(UrlConsts.CENTER_INFO_SEARCH + "/api")
+	@ResponseBody
+	public List<CenterInfo> searchApi(@Valid CenterInfoForm form) {
+		// 検索条件に基づいて在庫センター情報を取得
+		return centerInfoService.getCenterInfoData(
+				form.getCenterName(), 
+				form.getRegion(),
+				form.getStorageCapacityFrom(), 
+				form.getStorageCapacityTo());
+	}
+
 	/**
 	 * 検索パラメータのログ出力
 	 * 
