@@ -1,0 +1,711 @@
+WARN  2025-05-23 02:04:51.552   com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Retrograde clock change detected (housekeeper delta=27s926ms), soft-evicting connections from pool.
+INFO  2025-05-23 07:37:20.222   o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+INFO  2025-05-23 07:37:20.241   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+INFO  2025-05-23 07:37:20.260   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+INFO  2025-05-23 07:37:30.852   c.d.w.DroneInventorySystemApplication - Starting DroneInventorySystemApplication using Java 17.0.10 with PID 88049 (/Users/kurumadajun/GitHub/dotlife/development-PGcourse-DroneInventorySystem/DroneInventorySystem/target/classes started by kurumadajun in /Users/kurumadajun/GitHub/dotlife/development-PGcourse-DroneInventorySystem)
+INFO  2025-05-23 07:37:30.853   c.d.w.DroneInventorySystemApplication - No active profile set, falling back to 1 default profile: "default"
+INFO  2025-05-23 07:37:30.879   o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+INFO  2025-05-23 07:37:30.879   o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+INFO  2025-05-23 07:37:31.250   o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+INFO  2025-05-23 07:37:31.282   o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 28 ms. Found 3 JPA repository interfaces.
+INFO  2025-05-23 07:37:31.594   o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+INFO  2025-05-23 07:37:31.601   o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+INFO  2025-05-23 07:37:31.602   o.a.catalina.core.StandardService - Starting service [Tomcat]
+INFO  2025-05-23 07:37:31.603   o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.28]
+INFO  2025-05-23 07:37:31.626   o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+INFO  2025-05-23 07:37:31.626   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 747 ms
+INFO  2025-05-23 07:37:31.645   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+INFO  2025-05-23 07:37:31.843   com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2181869d
+INFO  2025-05-23 07:37:31.844   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+INFO  2025-05-23 07:37:31.850   o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:mysql://localhost:3306/stock_mng'
+INFO  2025-05-23 07:37:32.094   o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+DEBUG 2025-05-23 07:37:32.664   org.hibernate.SQL - 
+    alter table center_info 
+       modify column operational_status TINYINT(1) not null
+DEBUG 2025-05-23 07:37:32.664   org.hibernate.SQL - 
+    alter table center_info 
+       modify column operational_status TINYINT(1) not null
+INFO  2025-05-23 07:37:32.717   o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+INFO  2025-05-23 07:37:32.855   o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+WARN  2025-05-23 07:37:33.215   o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+INFO  2025-05-23 07:37:33.362   o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3853601b, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@73f28b72, org.springframework.security.web.context.SecurityContextHolderFilter@29ae16c0, org.springframework.security.web.header.HeaderWriterFilter@3233ee6b, org.springframework.security.web.csrf.CsrfFilter@63c5dd68, org.springframework.security.web.authentication.logout.LogoutFilter@b110c0c, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@74b59f59, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@548dd917, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@56f63727, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2b658d02, org.springframework.security.web.access.ExceptionTranslationFilter@201aba15, org.springframework.security.web.access.intercept.AuthorizationFilter@619be75]
+INFO  2025-05-23 07:37:33.497   o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+INFO  2025-05-23 07:37:33.511   o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+INFO  2025-05-23 07:37:33.520   o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+INFO  2025-05-23 07:37:33.527   c.d.w.DroneInventorySystemApplication - Started DroneInventorySystemApplication in 2.835 seconds (process running for 3.22)
+INFO  2025-05-23 07:37:46.003   o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+INFO  2025-05-23 07:37:46.004   o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+INFO  2025-05-23 07:37:46.010   o.s.web.servlet.DispatcherServlet - Completed initialization in 6 ms
+INFO  2025-05-23 07:37:46.042 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /login
+INFO  2025-05-23 07:37:46.044 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - START
+INFO  2025-05-23 07:37:46.044 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - END
+WARN  2025-05-23 07:37:46.321 0:0:0:0:0:0:0:1 dotlife o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.]
+DEBUG 2025-05-23 07:37:47.535   org.hibernate.SQL - 
+    select
+        ai1_0.admin_id,
+        ai1_0.admin_name,
+        ai1_0.create_date,
+        ai1_0.delete_flag,
+        ai1_0.mail,
+        ai1_0.password,
+        ai1_0.phone_number,
+        ai1_0.update_date 
+    from
+        admin_info ai1_0 
+    where
+        ai1_0.admin_id=?
+DEBUG 2025-05-23 07:37:47.535   org.hibernate.SQL - 
+    select
+        ai1_0.admin_id,
+        ai1_0.admin_name,
+        ai1_0.create_date,
+        ai1_0.delete_flag,
+        ai1_0.mail,
+        ai1_0.password,
+        ai1_0.phone_number,
+        ai1_0.update_date 
+    from
+        admin_info ai1_0 
+    where
+        ai1_0.admin_id=?
+INFO  2025-05-23 07:37:49.243 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo
+INFO  2025-05-23 07:37:49.244 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - START
+INFO  2025-05-23 07:37:49.244 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理を開始します
+INFO  2025-05-23 07:37:49.244 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 在庫センター情報の全件検索を実行
+DEBUG 2025-05-23 07:37:49.285 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+DEBUG 2025-05-23 07:37:49.285 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+INFO  2025-05-23 07:37:49.301 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 全件検索結果: 8件のデータを取得
+INFO  2025-05-23 07:37:49.301 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 取得したセンター情報データ: 8件
+INFO  2025-05-23 07:37:49.305 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 初期データをモデルに設定しました: centerInfoJson
+INFO  2025-05-23 07:37:49.305 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - END
+INFO  2025-05-23 07:37:49.305 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理が完了しました（表示テンプレート: admin/centerInfo/centerinfo-new）
+ERROR 2025-05-23 07:37:49.322 0:0:0:0:0:0:0:1 dotlife org.thymeleaf.TemplateEngine - [THYMELEAF][http-nio-8080-exec-1] Exception processing template "admin/centerInfo/centerinfo-new": An error happened during template parsing (template: "class path resource [templates/admin/centerInfo/centerinfo-new.html]")
+org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "class path resource [templates/admin/centerInfo/centerinfo-new.html]")
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:241)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1077)
+	at org.thymeleaf.spring6.view.ThymeleafView.renderFragment(ThymeleafView.java:372)
+	at org.thymeleaf.spring6.view.ThymeleafView.render(ThymeleafView.java:192)
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1432)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1168)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1106)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at com.digitalojt.web.filter.LogSettingFilter.doFilter(LogSettingFilter.java:48)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:384)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:904)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: org.attoparser.ParseException: Exception evaluating SpringEL expression: "region.description" (template: "admin/centerInfo/centerinfo-new" - line 107, col 78)
+	at org.attoparser.MarkupParser.parseDocument(MarkupParser.java:393)
+	at org.attoparser.MarkupParser.parse(MarkupParser.java:257)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:230)
+	... 102 common frames omitted
+Caused by: org.thymeleaf.exceptions.TemplateProcessingException: Exception evaluating SpringEL expression: "region.description" (template: "admin/centerInfo/centerinfo-new" - line 107, col 78)
+	at org.thymeleaf.spring6.expression.SPELVariableExpressionEvaluator.evaluate(SPELVariableExpressionEvaluator.java:292)
+	at org.thymeleaf.standard.expression.VariableExpression.executeVariableExpression(VariableExpression.java:166)
+	at org.thymeleaf.standard.expression.SimpleExpression.executeSimple(SimpleExpression.java:66)
+	at org.thymeleaf.standard.expression.Expression.execute(Expression.java:109)
+	at org.thymeleaf.standard.expression.Expression.execute(Expression.java:138)
+	at org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor.doProcess(AbstractStandardExpressionAttributeTagProcessor.java:144)
+	at org.thymeleaf.processor.element.AbstractAttributeTagProcessor.doProcess(AbstractAttributeTagProcessor.java:74)
+	at org.thymeleaf.processor.element.AbstractElementTagProcessor.process(AbstractElementTagProcessor.java:95)
+	at org.thymeleaf.util.ProcessorConfigurationUtils$ElementTagProcessorWrapper.process(ProcessorConfigurationUtils.java:633)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1314)
+	at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag.java:205)
+	at org.thymeleaf.engine.Model.process(Model.java:282)
+	at org.thymeleaf.engine.Model.process(Model.java:290)
+	at org.thymeleaf.engine.IteratedGatheringModelProcessable.processIterationModel(IteratedGatheringModelProcessable.java:368)
+	at org.thymeleaf.engine.IteratedGatheringModelProcessable.process(IteratedGatheringModelProcessable.java:222)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleCloseElement(ProcessorTemplateHandler.java:1640)
+	at org.thymeleaf.engine.CloseElementTag.beHandled(CloseElementTag.java:139)
+	at org.thymeleaf.engine.Model.process(Model.java:282)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1587)
+	at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag.java:205)
+	at org.thymeleaf.engine.Model.process(Model.java:282)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1587)
+	at org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler.handleOpenElementEnd(TemplateHandlerAdapterMarkupHandler.java:304)
+	at org.thymeleaf.templateparser.markup.InlinedOutputExpressionMarkupHandler$InlineMarkupAdapterPreProcessorHandler.handleOpenElementEnd(InlinedOutputExpressionMarkupHandler.java:278)
+	at org.thymeleaf.standard.inline.OutputExpressionInlinePreProcessorHandler.handleOpenElementEnd(OutputExpressionInlinePreProcessorHandler.java:186)
+	at org.thymeleaf.templateparser.markup.InlinedOutputExpressionMarkupHandler.handleOpenElementEnd(InlinedOutputExpressionMarkupHandler.java:124)
+	at org.attoparser.HtmlElement.handleOpenElementEnd(HtmlElement.java:109)
+	at org.attoparser.HtmlMarkupHandler.handleOpenElementEnd(HtmlMarkupHandler.java:297)
+	at org.attoparser.MarkupEventProcessorHandler.handleOpenElementEnd(MarkupEventProcessorHandler.java:402)
+	at org.attoparser.ParsingElementMarkupUtil.parseOpenElement(ParsingElementMarkupUtil.java:159)
+	at org.attoparser.MarkupParser.parseBuffer(MarkupParser.java:710)
+	at org.attoparser.MarkupParser.parseDocument(MarkupParser.java:301)
+	... 104 common frames omitted
+Caused by: org.springframework.expression.spel.SpelEvaluationException: EL1008E: Property or field 'description' cannot be found on object of type 'com.digitalojt.web.consts.Region' - maybe not public or not valid?
+	at org.springframework.expression.spel.ast.PropertyOrFieldReference.readProperty(PropertyOrFieldReference.java:229)
+	at org.springframework.expression.spel.ast.PropertyOrFieldReference.getValueInternal(PropertyOrFieldReference.java:112)
+	at org.springframework.expression.spel.ast.PropertyOrFieldReference$AccessorValueRef.getValue(PropertyOrFieldReference.java:417)
+	at org.springframework.expression.spel.ast.CompoundExpression.getValueInternal(CompoundExpression.java:97)
+	at org.springframework.expression.spel.ast.SpelNodeImpl.getValue(SpelNodeImpl.java:114)
+	at org.springframework.expression.spel.standard.SpelExpression.getValue(SpelExpression.java:338)
+	at org.thymeleaf.spring6.expression.SPELVariableExpressionEvaluator.evaluate(SPELVariableExpressionEvaluator.java:265)
+	... 135 common frames omitted
+ERROR 2025-05-23 07:37:49.325   o.a.c.c.C.[.[.[.[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: org.thymeleaf.exceptions.TemplateInputException: An error happened during template parsing (template: "class path resource [templates/admin/centerInfo/centerinfo-new.html]")] with root cause
+org.springframework.expression.spel.SpelEvaluationException: EL1008E: Property or field 'description' cannot be found on object of type 'com.digitalojt.web.consts.Region' - maybe not public or not valid?
+	at org.springframework.expression.spel.ast.PropertyOrFieldReference.readProperty(PropertyOrFieldReference.java:229)
+	at org.springframework.expression.spel.ast.PropertyOrFieldReference.getValueInternal(PropertyOrFieldReference.java:112)
+	at org.springframework.expression.spel.ast.PropertyOrFieldReference$AccessorValueRef.getValue(PropertyOrFieldReference.java:417)
+	at org.springframework.expression.spel.ast.CompoundExpression.getValueInternal(CompoundExpression.java:97)
+	at org.springframework.expression.spel.ast.SpelNodeImpl.getValue(SpelNodeImpl.java:114)
+	at org.springframework.expression.spel.standard.SpelExpression.getValue(SpelExpression.java:338)
+	at org.thymeleaf.spring6.expression.SPELVariableExpressionEvaluator.evaluate(SPELVariableExpressionEvaluator.java:265)
+	at org.thymeleaf.standard.expression.VariableExpression.executeVariableExpression(VariableExpression.java:166)
+	at org.thymeleaf.standard.expression.SimpleExpression.executeSimple(SimpleExpression.java:66)
+	at org.thymeleaf.standard.expression.Expression.execute(Expression.java:109)
+	at org.thymeleaf.standard.expression.Expression.execute(Expression.java:138)
+	at org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor.doProcess(AbstractStandardExpressionAttributeTagProcessor.java:144)
+	at org.thymeleaf.processor.element.AbstractAttributeTagProcessor.doProcess(AbstractAttributeTagProcessor.java:74)
+	at org.thymeleaf.processor.element.AbstractElementTagProcessor.process(AbstractElementTagProcessor.java:95)
+	at org.thymeleaf.util.ProcessorConfigurationUtils$ElementTagProcessorWrapper.process(ProcessorConfigurationUtils.java:633)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1314)
+	at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag.java:205)
+	at org.thymeleaf.engine.Model.process(Model.java:282)
+	at org.thymeleaf.engine.Model.process(Model.java:290)
+	at org.thymeleaf.engine.IteratedGatheringModelProcessable.processIterationModel(IteratedGatheringModelProcessable.java:368)
+	at org.thymeleaf.engine.IteratedGatheringModelProcessable.process(IteratedGatheringModelProcessable.java:222)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleCloseElement(ProcessorTemplateHandler.java:1640)
+	at org.thymeleaf.engine.CloseElementTag.beHandled(CloseElementTag.java:139)
+	at org.thymeleaf.engine.Model.process(Model.java:282)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1587)
+	at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag.java:205)
+	at org.thymeleaf.engine.Model.process(Model.java:282)
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1587)
+	at org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler.handleOpenElementEnd(TemplateHandlerAdapterMarkupHandler.java:304)
+	at org.thymeleaf.templateparser.markup.InlinedOutputExpressionMarkupHandler$InlineMarkupAdapterPreProcessorHandler.handleOpenElementEnd(InlinedOutputExpressionMarkupHandler.java:278)
+	at org.thymeleaf.standard.inline.OutputExpressionInlinePreProcessorHandler.handleOpenElementEnd(OutputExpressionInlinePreProcessorHandler.java:186)
+	at org.thymeleaf.templateparser.markup.InlinedOutputExpressionMarkupHandler.handleOpenElementEnd(InlinedOutputExpressionMarkupHandler.java:124)
+	at org.attoparser.HtmlElement.handleOpenElementEnd(HtmlElement.java:109)
+	at org.attoparser.HtmlMarkupHandler.handleOpenElementEnd(HtmlMarkupHandler.java:297)
+	at org.attoparser.MarkupEventProcessorHandler.handleOpenElementEnd(MarkupEventProcessorHandler.java:402)
+	at org.attoparser.ParsingElementMarkupUtil.parseOpenElement(ParsingElementMarkupUtil.java:159)
+	at org.attoparser.MarkupParser.parseBuffer(MarkupParser.java:710)
+	at org.attoparser.MarkupParser.parseDocument(MarkupParser.java:301)
+	at org.attoparser.MarkupParser.parse(MarkupParser.java:257)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parse(AbstractMarkupTemplateParser.java:230)
+	at org.thymeleaf.templateparser.markup.AbstractMarkupTemplateParser.parseStandalone(AbstractMarkupTemplateParser.java:100)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:666)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1077)
+	at org.thymeleaf.spring6.view.ThymeleafView.renderFragment(ThymeleafView.java:372)
+	at org.thymeleaf.spring6.view.ThymeleafView.render(ThymeleafView.java:192)
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1432)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1168)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1106)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at com.digitalojt.web.filter.LogSettingFilter.doFilter(LogSettingFilter.java:48)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:384)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:904)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+ERROR 2025-05-23 07:37:49.334   c.d.w.controller.AbstractController - ERROR: GET - handleError - 
+INFO  2025-05-23 08:37:24.753   o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+INFO  2025-05-23 08:37:24.762   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+INFO  2025-05-23 08:37:24.782   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+INFO  2025-05-23 08:37:34.679   c.d.w.DroneInventorySystemApplication - Starting DroneInventorySystemApplication using Java 17.0.10 with PID 19117 (/Users/kurumadajun/GitHub/dotlife/development-PGcourse-DroneInventorySystem/DroneInventorySystem/target/classes started by kurumadajun in /Users/kurumadajun/GitHub/dotlife/development-PGcourse-DroneInventorySystem)
+INFO  2025-05-23 08:37:34.680   c.d.w.DroneInventorySystemApplication - No active profile set, falling back to 1 default profile: "default"
+INFO  2025-05-23 08:37:34.703   o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+INFO  2025-05-23 08:37:34.703   o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+INFO  2025-05-23 08:37:35.082   o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+INFO  2025-05-23 08:37:35.117   o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 30 ms. Found 3 JPA repository interfaces.
+INFO  2025-05-23 08:37:35.432   o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+INFO  2025-05-23 08:37:35.438   o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+INFO  2025-05-23 08:37:35.440   o.a.catalina.core.StandardService - Starting service [Tomcat]
+INFO  2025-05-23 08:37:35.440   o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.28]
+INFO  2025-05-23 08:37:35.463   o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+INFO  2025-05-23 08:37:35.463   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 760 ms
+INFO  2025-05-23 08:37:35.485   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+INFO  2025-05-23 08:37:35.672   com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6238ba02
+INFO  2025-05-23 08:37:35.673   com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+INFO  2025-05-23 08:37:35.679   o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:mysql://localhost:3306/stock_mng'
+INFO  2025-05-23 08:37:35.931   o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+DEBUG 2025-05-23 08:37:36.472   org.hibernate.SQL - 
+    alter table center_info 
+       modify column operational_status TINYINT(1) not null
+DEBUG 2025-05-23 08:37:36.472   org.hibernate.SQL - 
+    alter table center_info 
+       modify column operational_status TINYINT(1) not null
+INFO  2025-05-23 08:37:36.512   o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+INFO  2025-05-23 08:37:36.663   o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+WARN  2025-05-23 08:37:37.020   o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+INFO  2025-05-23 08:37:37.178   o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@635d0787, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@256745fb, org.springframework.security.web.context.SecurityContextHolderFilter@3c782603, org.springframework.security.web.header.HeaderWriterFilter@69346dde, org.springframework.security.web.csrf.CsrfFilter@8ca6595, org.springframework.security.web.authentication.logout.LogoutFilter@36ee3ea7, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@69f5df61, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3fa63875, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@a9cc59b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@62ae88e1, org.springframework.security.web.access.ExceptionTranslationFilter@5cba9474, org.springframework.security.web.access.intercept.AuthorizationFilter@2a2d8a35]
+INFO  2025-05-23 08:37:37.321   o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+INFO  2025-05-23 08:37:37.336   o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+INFO  2025-05-23 08:37:37.345   o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+INFO  2025-05-23 08:37:37.352   c.d.w.DroneInventorySystemApplication - Started DroneInventorySystemApplication in 2.836 seconds (process running for 3.226)
+INFO  2025-05-23 08:37:50.349   o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+INFO  2025-05-23 08:37:50.352   o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+INFO  2025-05-23 08:37:50.356   o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+INFO  2025-05-23 08:37:50.387 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /login
+INFO  2025-05-23 08:37:50.389 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - START
+INFO  2025-05-23 08:37:50.389 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - END
+WARN  2025-05-23 08:37:50.678 0:0:0:0:0:0:0:1 dotlife o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource favicon.ico.]
+DEBUG 2025-05-23 08:37:52.244   org.hibernate.SQL - 
+    select
+        ai1_0.admin_id,
+        ai1_0.admin_name,
+        ai1_0.create_date,
+        ai1_0.delete_flag,
+        ai1_0.mail,
+        ai1_0.password,
+        ai1_0.phone_number,
+        ai1_0.update_date 
+    from
+        admin_info ai1_0 
+    where
+        ai1_0.admin_id=?
+DEBUG 2025-05-23 08:37:52.244   org.hibernate.SQL - 
+    select
+        ai1_0.admin_id,
+        ai1_0.admin_name,
+        ai1_0.create_date,
+        ai1_0.delete_flag,
+        ai1_0.mail,
+        ai1_0.password,
+        ai1_0.phone_number,
+        ai1_0.update_date 
+    from
+        admin_info ai1_0 
+    where
+        ai1_0.admin_id=?
+INFO  2025-05-23 08:37:53.946 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo
+INFO  2025-05-23 08:37:53.946 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - START
+INFO  2025-05-23 08:37:53.946 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理を開始します
+INFO  2025-05-23 08:37:53.947 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 在庫センター情報の全件検索を実行
+DEBUG 2025-05-23 08:37:53.989 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+DEBUG 2025-05-23 08:37:53.989 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+INFO  2025-05-23 08:37:53.997 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 全件検索結果: 8件のデータを取得
+INFO  2025-05-23 08:37:53.997 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 取得したセンター情報データ: 8件
+INFO  2025-05-23 08:37:54.002 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 初期データをモデルに設定しました: centerInfoJson
+INFO  2025-05-23 08:37:54.002 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - END
+INFO  2025-05-23 08:37:54.002 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理が完了しました（表示テンプレート: admin/centerInfo/centerinfo-rebuild）
+INFO  2025-05-23 08:38:00.097 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo/search
+INFO  2025-05-23 08:38:00.097 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - search - START
+INFO  2025-05-23 08:38:00.097 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報の検索APIが呼び出されました
+WARN  2025-05-23 08:38:00.097 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件のバリデーションエラー: [Error in object 'centerInfoForm': codes [CenterInfoFormValidator.centerInfoForm,CenterInfoFormValidator]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [centerInfoForm]; arguments []; default message []]; default message [すべてのフィールドが空です。少なくとも1つのフィールドに値を入力してくださいtest。]]
+INFO  2025-05-23 08:38:02.892 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo/search
+INFO  2025-05-23 08:38:02.892 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - search - START
+INFO  2025-05-23 08:38:02.892 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報の検索APIが呼び出されました
+WARN  2025-05-23 08:38:02.892 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件のバリデーションエラー: [Error in object 'centerInfoForm': codes [CenterInfoFormValidator.centerInfoForm,CenterInfoFormValidator]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [centerInfoForm]; arguments []; default message []]; default message [すべてのフィールドが空です。少なくとも1つのフィールドに値を入力してくださいtest。]]
+INFO  2025-05-23 08:38:13.902 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo
+INFO  2025-05-23 08:38:13.904 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - START
+INFO  2025-05-23 08:38:13.904 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理を開始します
+INFO  2025-05-23 08:38:13.904 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 在庫センター情報の全件検索を実行
+DEBUG 2025-05-23 08:38:13.916 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+DEBUG 2025-05-23 08:38:13.916 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+INFO  2025-05-23 08:38:13.926 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 全件検索結果: 8件のデータを取得
+INFO  2025-05-23 08:38:13.926 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 取得したセンター情報データ: 8件
+INFO  2025-05-23 08:38:13.928 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 初期データをモデルに設定しました: centerInfoJson
+INFO  2025-05-23 08:38:13.929 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - END
+INFO  2025-05-23 08:38:13.929 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理が完了しました（表示テンプレート: admin/centerInfo/centerinfo-rebuild）
+INFO  2025-05-23 08:38:30.119 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo/search
+INFO  2025-05-23 08:38:30.121 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - search - START
+INFO  2025-05-23 08:38:30.121 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報の検索APIが呼び出されました
+WARN  2025-05-23 08:38:30.121 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件のバリデーションエラー: [Error in object 'centerInfoForm': codes [CenterInfoFormValidator.centerInfoForm,CenterInfoFormValidator]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [centerInfoForm]; arguments []; default message []]; default message [すべてのフィールドが空です。少なくとも1つのフィールドに値を入力してくださいtest。]]
+INFO  2025-05-23 08:38:35.789 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo
+INFO  2025-05-23 08:38:35.790 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - START
+INFO  2025-05-23 08:38:35.790 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理を開始します
+INFO  2025-05-23 08:38:35.790 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 在庫センター情報の全件検索を実行
+DEBUG 2025-05-23 08:38:35.795 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+DEBUG 2025-05-23 08:38:35.795 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0
+INFO  2025-05-23 08:38:35.801 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 全件検索結果: 8件のデータを取得
+INFO  2025-05-23 08:38:35.801 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 取得したセンター情報データ: 8件
+INFO  2025-05-23 08:38:35.802 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 初期データをモデルに設定しました: centerInfoJson
+INFO  2025-05-23 08:38:35.802 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - index - END
+INFO  2025-05-23 08:38:35.802 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報画面の初期表示処理が完了しました（表示テンプレート: admin/centerInfo/centerinfo-rebuild）
+INFO  2025-05-23 08:38:41.968 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo/search
+INFO  2025-05-23 08:38:41.969 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - search - START
+INFO  2025-05-23 08:38:41.969 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報の検索APIが呼び出されました
+WARN  2025-05-23 08:38:41.970 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件のバリデーションエラー: [Error in object 'centerInfoForm': codes [CenterInfoFormValidator.centerInfoForm,CenterInfoFormValidator]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [centerInfoForm]; arguments []; default message []]; default message [不正な文字列を検出しました。]]
+INFO  2025-05-23 08:38:54.865 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo/search
+INFO  2025-05-23 08:38:54.866 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - search - START
+INFO  2025-05-23 08:38:54.866 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報の検索APIが呼び出されました
+INFO  2025-05-23 08:38:54.866 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件 - センター名: 
+INFO  2025-05-23 08:38:54.867 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件 - 都道府県: 東京都
+INFO  2025-05-23 08:38:54.867 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件 - 容量(From): 0
+INFO  2025-05-23 08:38:54.867 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件 - 容量(To): 500
+INFO  2025-05-23 08:38:54.867 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 在庫センター情報の条件検索を実行: centerName=[], region=[東京都], capacityFrom=0, capacityTo=500
+DEBUG 2025-05-23 08:38:54.915 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0 
+    where
+        (
+            ?='' 
+            or ci1_0.center_name like ? escape ''
+        ) 
+        and (
+            ?='' 
+            or ci1_0.address like ? escape ''
+        ) 
+        and (
+            ci1_0.current_storage_capacity>=?
+        ) 
+        and (
+            ci1_0.current_storage_capacity<=?
+        ) 
+        and (
+            ci1_0.operational_status=0
+        )
+DEBUG 2025-05-23 08:38:54.915 0:0:0:0:0:0:0:1 dotlife org.hibernate.SQL - 
+    select
+        ci1_0.center_id,
+        ci1_0.address,
+        ci1_0.center_name,
+        ci1_0.create_date,
+        ci1_0.current_storage_capacity,
+        ci1_0.delete_flag,
+        ci1_0.manager_name,
+        ci1_0.max_storage_capacity,
+        ci1_0.notes,
+        ci1_0.operational_status,
+        ci1_0.phone_number,
+        ci1_0.post_code,
+        ci1_0.update_date 
+    from
+        center_info ci1_0 
+    where
+        (
+            ?='' 
+            or ci1_0.center_name like ? escape ''
+        ) 
+        and (
+            ?='' 
+            or ci1_0.address like ? escape ''
+        ) 
+        and (
+            ci1_0.current_storage_capacity>=?
+        ) 
+        and (
+            ci1_0.current_storage_capacity<=?
+        ) 
+        and (
+            ci1_0.operational_status=0
+        )
+INFO  2025-05-23 08:38:54.920 0:0:0:0:0:0:0:1 dotlife c.d.web.service.CenterInfoService - 条件検索結果: 1件のデータを取得
+INFO  2025-05-23 08:38:54.920 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索結果: 1件のデータが見つかりました
+INFO  2025-05-23 08:38:54.921 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - search - END
+INFO  2025-05-23 08:38:54.922 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索結果レスポンスを返します: 1件
+INFO  2025-05-23 08:45:44.401 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - ACCESS: /admin/centerInfo/search
+INFO  2025-05-23 08:45:44.402 0:0:0:0:0:0:0:1 dotlife c.d.w.controller.AbstractController - APP: GET - search - START
+INFO  2025-05-23 08:45:44.402 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 在庫センター情報の検索APIが呼び出されました
+WARN  2025-05-23 08:45:44.402 0:0:0:0:0:0:0:1 dotlife c.d.w.c.CenterInfoController - 検索条件のバリデーションエラー: [Error in object 'centerInfoForm': codes [CenterInfoFormValidator.centerInfoForm,CenterInfoFormValidator]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [centerInfoForm]; arguments []; default message []]; default message [不正な文字列を検出しました。]]

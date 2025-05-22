@@ -82,9 +82,11 @@ public class CenterInfoController extends AbstractController {
 	@GetMapping(UrlConsts.CENTER_INFO)
 	public String index(Model model) {
 		logStart(LogMessage.HTTP_GET);
+		logger.info("在庫センター情報画面の初期表示処理を開始します");
 
 		// 在庫センター情報画面に表示するデータを取得
 		List<CenterInfo> centerInfoList = centerInfoService.getCenterInfoData();
+		logger.info("取得したセンター情報データ: {}件", centerInfoList.size());
 
 		// 画面表示用に商品情報リストをセット
 		model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST, centerInfoList);
@@ -106,14 +108,17 @@ public class CenterInfoController extends AbstractController {
 			}
 			
 			model.addAttribute("centerInfoJson", centerInfoJson);
+			logger.info("初期データをモデルに設定しました: centerInfoJson");
 		} catch (Exception e) {
 			// JSON変換エラー
 			logException(LogMessage.HTTP_GET, "JSON変換エラー: " + e.getMessage());
 			logger.error("JSON変換エラーの詳細", e);
 			model.addAttribute("centerInfoJson", "[]");
+			logger.warn("JSONエラーのため、空の配列をモデルに設定しました");
 		}
 
 		logEnd(LogMessage.HTTP_GET);
+		logger.info("在庫センター情報画面の初期表示処理が完了しました（表示テンプレート: {}）", UrlConsts.CENTER_INFO_INDEX);
 
 		return UrlConsts.CENTER_INFO_INDEX;
 	}
@@ -130,6 +135,7 @@ public class CenterInfoController extends AbstractController {
 	@ResponseBody
 	public ResponseEntity<ApiResponseDto<List<CenterInfo>>> search(Model model, @Valid CenterInfoForm form, BindingResult bindingResult) {
 		logStart(LogMessage.HTTP_GET);
+		logger.info("在庫センター情報の検索APIが呼び出されました");
 		
 		// 入力値のバリデーションチェック
 		if (bindingResult.hasErrors()) {
@@ -149,11 +155,17 @@ public class CenterInfoController extends AbstractController {
 					form.getStorageCapacityFrom(),
 					form.getStorageCapacityTo());
 	
+			logger.info("検索結果: {}件のデータが見つかりました", centerInfoList.size());
+			
 			// デバッグ：検索結果のJSONシリアライズ確認
 			try {
 				logger.debug("JSON変換前の検索結果: {} 件", centerInfoList.size());
 				String resultJson = objectMapper.writeValueAsString(centerInfoList);
 				logger.debug("検索結果のJSON変換: {} 文字", resultJson.length());
+				if (centerInfoList.size() > 0) {
+					logger.debug("JSON変換サンプル (最初の1件): {}",
+							objectMapper.writeValueAsString(centerInfoList.get(0)));
+				}
 			} catch (Exception ex) {
 				logger.warn("検索結果のJSON変換デバッグ中にエラー", ex);
 			}
@@ -165,6 +177,7 @@ public class CenterInfoController extends AbstractController {
 				ApiResponseDto<List<CenterInfo>> response = ApiResponseDto.success(
 						Collections.emptyList(), 
 						"該当するデータはありません");
+				logger.info("検索結果なしのレスポンスを返します");
 				return ResponseEntity.ok(response);
 			}
 			
@@ -172,6 +185,7 @@ public class CenterInfoController extends AbstractController {
 			ApiResponseDto<List<CenterInfo>> response = ApiResponseDto.success(
 					centerInfoList, 
 					String.format("%d件のデータが見つかりました", centerInfoList.size()));
+			logger.info("検索結果レスポンスを返します: {}件", centerInfoList.size());
 			return ResponseEntity.ok(response);
 			
 		} catch (Exception e) {
@@ -179,9 +193,9 @@ public class CenterInfoController extends AbstractController {
 			logger.error("検索処理中にエラーが発生しました", e);
 			
 			// サーバーエラーレスポンスを返却
-			ApiResponseDto<List<CenterInfo>> errorResponse = ApiResponseDto.serverError(
-					"データ検索中にエラーが発生しました。システム管理者に連絡してください。");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+			ApiResponseDto<List<CenterInfo>> response = ApiResponseDto.serverError(
+					String.format("検索処理中にエラーが発生しました: %s", e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 	
@@ -271,14 +285,10 @@ public class CenterInfoController extends AbstractController {
 	 * @param form 検索フォーム
 	 */
 	private void logSearchParameters(CenterInfoForm form) {
-		// 検索条件のログ出力
-		StringBuilder logMsg = new StringBuilder("検索条件: ");
-		logMsg.append("センター名=").append(form.getCenterName()).append(", ");
-		logMsg.append("都道府県=").append(form.getRegion()).append(", ");
-		logMsg.append("容量From=").append(form.getStorageCapacityFrom()).append(", ");
-		logMsg.append("容量To=").append(form.getStorageCapacityTo());
-		
-		logger.info(logMsg.toString());
+		logger.info("検索条件 - センター名: {}", form.getCenterName());
+		logger.info("検索条件 - 都道府県: {}", form.getRegion());
+		logger.info("検索条件 - 容量(From): {}", form.getStorageCapacityFrom());
+		logger.info("検索条件 - 容量(To): {}", form.getStorageCapacityTo());
 	}
 
 	/**

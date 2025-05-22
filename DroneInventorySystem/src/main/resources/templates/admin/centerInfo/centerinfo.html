@@ -5,12 +5,25 @@
 >
   <head>
     <title>InvenTrack</title>
-    <!-- Alpine.jsをCDNから読み込み -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.3/dist/cdn.min.js" defer></script>
+    <!-- Alpine.jsをCDNから読み込み - 最新の安定版を使用 -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
     <style>
       /* ローディング状態の視覚的制御 */
-      body.searching .spinner-border {
-        display: block !important;
+      .spinner-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 0;
+      }
+      
+      /* フォームレイアウト調整 */
+      .form-inline label {
+        margin-right: 0.5rem;
+        margin-bottom: 0;
+      }
+      
+      .form-inline .form-control {
+        margin-right: 1rem;
       }
       
       /* デバッグ用スタイル */
@@ -29,14 +42,8 @@
 
   <body>
 	<div class="card shadow mb-4" 
-		x-data="centerInfoComponent" 
-		x-init="
-			console.log('コンポーネント初期化開始');
-			$nextTick(() => { 
-				init();
-				console.log('コンポーネント初期化完了');
-			})
-		">
+		x-data="centerInfoComponent()" 
+		x-init="init()">
 
 		<div class="card-header py-3">
 			<h6 class="m-0 font-weight-bold text-primary">在庫センター情報</h6>
@@ -194,8 +201,6 @@
     console.log('Alpine初期化イベント発火');
     // Alpine.jsが初期化されたらコンポーネントを登録
     Alpine.data('centerInfoComponent', () => ({
-      // データ初期化
-      Alpine.data('centerInfoComponent', () => ({
           // データ初期化
           searchParams: {
               centerName: '',
