@@ -2,13 +2,14 @@ package com.digitalojt.web.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.digitalojt.web.entity.CenterInfo;
 import com.digitalojt.web.repository.CenterInfoRepository;
 
 import lombok.RequiredArgsConstructor;
-
 /**
  * 在庫センター情報画面のサービスクラス
  *
@@ -18,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CenterInfoService {
+	
+	/** 2025/05/21 ロガー定義 */
+	private static final Logger logger = LoggerFactory.getLogger(CenterInfoService.class);
 
 	/** センター情報テーブル リポジトリー */
 	private final CenterInfoRepository repository;
