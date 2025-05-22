@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.digitalojt.web.exception.GlobalExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,6 @@ import com.digitalojt.web.entity.CenterInfo;
 import com.digitalojt.web.exception.BusinessLogicException;
 import com.digitalojt.web.exception.ResourceNotFoundException;
 import com.digitalojt.web.form.CenterInfoForm;
-import com.digitalojt.web.handler.GlobalExceptionHandler;
 import com.digitalojt.web.service.CenterInfoService;
 
 import jakarta.validation.Valid;

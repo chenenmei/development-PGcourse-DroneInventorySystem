@@ -2,6 +2,7 @@ package com.digitalojt.web.service;
 
 import java.util.List;
 
+import com.digitalojt.web.exception.BusinessLogicException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,6 @@ public class CenterInfoService {
 
 	/** センター情報テーブル リポジトリー */
 	private final CenterInfoRepository repository;
-	
-	/** ロガー */
-	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CenterInfoService.class);
 
 	/**
 	 * 在庫センター情報を全建検索で取得

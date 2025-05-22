@@ -74,3 +74,8 @@ DroneInventorySystem/target/classes/templates/layout/navbar.html
 DroneInventorySystem/target/classes/templates/layout/template.html
 logs/2025-05-22_stockmng.log
 docker-compose.yml
+DroneInventorySystem/target/classes/com/digitalojt/web/dto/ApiResponseDto.class
+DroneInventorySystem/target/classes/com/digitalojt/web/dto/ApiResponseDto$ApiResponseDtoBuilder.class
+DroneInventorySystem/target/classes/com/digitalojt/web/exception/BusinessLogicException.class
+DroneInventorySystem/target/classes/com/digitalojt/web/exception/ResourceNotFoundException.class
+DroneInventorySystem/target/classes/com/digitalojt/web/handler/GlobalExceptionHandler.class
