@@ -4,24 +4,63 @@ sequenceDiagram
     participant Controller as CenterInfoController
     participant Service as CenterInfoService
     participant Repository as CenterInfoRepository(DB)
+    participant DB as DB
 
     User->>Frontend: 容量From/To入力
     Frontend->>Frontend: 入力値のリアルタイム検証
+
     alt 入力不正
         Frontend-->>User: エラーメッセージ表示
     else 入力正常
-        User->>Frontend: 検索ボタン押下
-        Frontend->>Controller: Ajaxで検索条件送信
-        Controller->>Service: 検索条件を渡す
-        Service->>Repository: DBクエリ実行
-        Repository-->>Service: 検索結果返却
-        Service-->>Controller: 検索結果返却
-        alt 結果あり
-            Controller-->>Frontend: 検索結果JSON返却
-            Frontend->>Frontend: 画面リストを更新
-            Frontend-->>User: 操作完了のポップアップ表示
-        else 結果なし
-            Controller-->>Frontend: 空の結果またはメッセージ返却
-            Frontend-->>User: 「該当データなし」メッセージ表示
+        par 正常検索系（同期検索）
+            User->>Controller: フォーム送信（ページリロード）
+            Controller->>Service: 検索条件を渡す
+            Service->>Repository: DBクエリ実行
+            Repository->>DB: 検索クエリ実行
+            DB-->>Repository: 検索結果返却
+            Repository-->>Service: 検索結果返却
+            Service-->>Controller: 検索結果返却
+            alt 検索結果あり
+                Controller-->>User: ページ更新して結果表示
+            else 検索結果なし
+                Controller-->>User: 「検索結果がありません」メッセージ表示
+            end
+        and 非同期検索系（Ajax検索）
+            User->>Frontend: 検索ボタン押下
+            Frontend->>Frontend: isLoading = true
+            Frontend->>Controller: Ajaxで検索条件送信
+
+            alt Ajax通信成功
+                Controller->>Service: 検索条件を渡す
+                Service->>Repository: DBクエリ実行
+                Repository->>DB: 検索クエリ実行
+                DB-->>Repository: 検索結果返却
+                Repository-->>Service: 検索結果返却
+                Service-->>Controller: 検索結果返却
+                Controller-->>Frontend: HTTPレスポンス返却
+
+                alt HTTPステータス 200系（成功）
+                    Frontend->>Frontend: isLoading = false
+                    alt 検索結果あり
+                        Frontend->>Frontend: ajaxResultsに格納
+                        Frontend-->>User: 操作完了のポップアップ表示
+                    else 検索結果なし
+                        Frontend-->>User: 「該当データなし」メッセージ表示
+                    end
+                else HTTPステータス 400系（クライアントエラー）
+                    Frontend->>Frontend: isLoading = false
+                    Frontend-->>User: リクエストエラーのメッセージ表示
+                else HTTPステータス 500系（サーバーエラー）
+                    Frontend->>Frontend: isLoading = false
+                    Frontend-->>User: サーバーエラーのメッセージ表示
+                end
+
+            else Ajax通信失敗（ネットワークエラーなど）
+                Frontend->>Frontend: console.error('検索エラー:', error)
+                Frontend->>Frontend: notification = {show: true, message: error.message || '検索中にエラーが発生しました', type: 'danger'}
+                Frontend->>Frontend: ajaxResults = []
+                Frontend->>Frontend: isLoading = false
+                Frontend-->>User: エラーメッセージ表示（notificationによる）
+            end
         end
     end
