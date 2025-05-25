@@ -5,3 +5,4 @@ prreview_frommadaoz1974*.md
 DroneInventorySystem/target/*
 docker-compose.yml
 logs/*.log
+mysql-data/*

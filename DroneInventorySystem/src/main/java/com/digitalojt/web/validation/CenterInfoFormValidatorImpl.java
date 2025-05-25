@@ -25,12 +25,10 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
     @Override
     public boolean isValid(CenterInfoForm form, ConstraintValidatorContext context) {
         try {
-            // フィールドがすべて空である場合にエラー処理
+            // 検索画面では全ての項目が空でも有効とする（全件検索として処理）
             if (isAllFieldsEmpty(form)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.ALL_FIELDS_EMPTY_ERROR_MESSAGE))
-                       .addConstraintViolation();
-                return false;
+                // 2025/05/23 仕様変更: 全フィールドが空の場合も有効とする（全件検索として処理）
+                return true;
             }
             
             // センター名のバリデーション - 入力されている場合のみ検証

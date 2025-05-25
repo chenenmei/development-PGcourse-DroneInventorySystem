@@ -350,16 +350,18 @@
                 params.append('storageCapacityTo', String(this.searchParams.storageCapacityTo));
               }
               
-              // もしすべてのパラメータが空の場合は、ダミーパラメータを追加（バリデーションエラーを回避）
+              // もしすべてのパラメータが空の場合は、空のパラメータを追加（全件検索を実行）
               if (params.toString() === '') {
-                // 少なくとも1つのパラメータが必要なため、ダミー検索条件を追加
+                // 空の値で全件検索をサポート
                 params.append('centerName', '');
+                params.append('region', '');
               }
               
               // APIリクエストのURLを組み立て
               console.log('検索パラメータ:', this.searchParams);
               
               // URLと検索パラメータを設定
+              // URLパスはUrlConstsクラスの定義に合わせる（/admin/centerInfo/search）
               const apiUrl = '/admin/centerInfo/search';
               console.log('API呼び出し:', `${apiUrl}?${params.toString()}`);
               
