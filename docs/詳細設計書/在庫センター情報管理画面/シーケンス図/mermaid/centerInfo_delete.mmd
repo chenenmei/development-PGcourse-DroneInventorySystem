@@ -1,0 +1,55 @@
+sequenceDiagram
+    participant User as ユーザー
+    participant Frontend as フロントエンド(Alpine.js)
+    participant Controller as CenterInfoController
+    participant Service as CenterInfoService
+    participant Repository as CenterInfoRepository
+    participant StockRepo as StockRepository
+    participant DB as 在庫センター情報テーブル
+
+    alt 同期処理（画面遷移）
+        User->>Controller: POST /admin/centerInfo/delete?id=1
+        Controller->>Service: deleteCenterInfo(id)
+        Service->>StockRepo: 関連データチェック
+        alt 在庫あり
+            Service-->>Controller: 削除不可
+            Controller-->>User: エラーメッセージ表示
+        else 在庫なし
+            note over Service,Repository: トランザクション制御：@Transactional により例外時はロールバック
+            note over Repository,DB: 排他制御：@Version による楽観ロックを適用（削除時の一貫性を保証）
+            Service->>Repository: DELETE center_info
+            Repository->>DB: DELETE実行
+            DB-->>Repository: OK
+            Repository-->>Service: OK
+            Service-->>Controller: 削除成功
+            Controller-->>User: redirect /admin/centerInfo/index
+        end
+    else 非同期処理（Ajax）
+        User->>Frontend: 削除ボタン押下→確認OK
+        Frontend->>Controller: Ajax DELETE /admin/centerInfo/delete/1
+        Controller->>Service: deleteCenterInfo(id)
+        Service->>StockRepo: 関連在庫チェック
+        alt 在庫あり
+            Service-->>Controller: Conflict
+            Controller-->>Frontend: HTTP 409 Conflict
+            Frontend-->>User: 削除不可メッセージ表示
+        else 在庫なし
+            note over Service,Repository: トランザクション制御：@Transactional により例外時はロールバック
+            note over Repository,DB: 排他制御：@Version による楽観ロックを適用（削除時の一貫性を保証）
+            Service->>Repository: DELETE処理
+            Repository->>DB: DELETE実行
+            DB-->>Repository: OK
+            Repository-->>Service: OK
+            Service-->>Controller: OK
+            Controller-->>Frontend: HTTP 200 OK
+            Frontend-->>User: 「削除完了」＆一覧再描画
+        end
+
+        alt HTTP 500（サーバーエラー）
+            Controller-->>Frontend: Internal Server Error
+            Frontend-->>User: サーバーエラー表示
+        else 通信失敗
+            Frontend->>Frontend: catch(error)
+            Frontend-->>User: 通信失敗メッセージ表示
+        end
+    end

@@ -1,0 +1,52 @@
+sequenceDiagram
+    participant User as ユーザー
+    participant Frontend as フロントエンド(Alpine.js)
+    participant Controller as CenterInfoController
+    participant Service as CenterInfoService
+    participant Repository as CenterInfoRepository
+    participant DB as 在庫センター情報テーブル
+
+    alt 同期処理（画面遷移）
+        User->>Controller: POST /admin/centerInfo/edit（フォーム送信）
+        Controller->>Service: updateCenterInfo(form)
+        note over Service,Repository: トランザクション制御：@Transactional により例外発生時はロールバック
+        Service->>Repository: UPDATE center_info
+        note over Repository,DB: 排他制御：@Version による楽観ロックを適用（バージョン不一致時は更新中止）
+        Repository->>DB: 更新実行
+        DB-->>Repository: 成功
+        Repository-->>Service: OK
+        Service-->>Controller: OK
+        Controller-->>User: redirect /admin/centerInfo/index
+    else 非同期処理（Ajax）
+        User->>Frontend: 入力フォームを編集
+        Frontend->>Frontend: 入力チェック（リアルタイム：必須／桁数／数値）
+        alt 入力不正（クライアント側）
+            Frontend-->>User: 入力エラー即時表示
+        else 入力正常
+            User->>Frontend: 更新ボタン押下
+            Frontend->>Controller: Ajax PUT /admin/centerInfo/update
+            Controller->>Service: updateCenterInfo(form)
+            note over Service,Repository: トランザクション制御：@Transactional により例外発生時はロールバック
+            note over Repository,DB: 排他制御：@Version による楽観ロックを適用（バージョン不一致時は更新中止）
+            Service->>Repository: DB更新
+            Repository->>DB: UPDATE center_info
+            DB-->>Repository: 成功
+            Repository-->>Service: OK
+            Service-->>Controller: OK
+            alt HTTP 200 OK
+                Controller-->>Frontend: 更新成功レスポンス
+                Frontend-->>User: 「更新完了」ポップアップ表示
+            else HTTP 400（バリデーションエラー）
+                Controller-->>Frontend: 入力エラー詳細返却
+                Frontend-->>User: フォーム入力エラー表示
+            else HTTP 500（サーバーエラー）
+                Controller-->>Frontend: エラー情報返却
+                Frontend-->>User: サーバーエラー表示
+            end
+
+            alt 通信失敗
+                Frontend->>Frontend: catch(error)
+                Frontend-->>User: 「通信に失敗しました」ポップアップ表示
+            end
+        end
+    end
