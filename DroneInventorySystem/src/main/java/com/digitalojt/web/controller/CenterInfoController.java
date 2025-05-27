@@ -1,24 +1,36 @@
 package com.digitalojt.web.controller;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.digitalojt.web.exception.GlobalExceptionHandler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.digitalojt.web.consts.LogMessage;
 import com.digitalojt.web.consts.ModelAttributeContents;
 import com.digitalojt.web.consts.Region;
 import com.digitalojt.web.consts.UrlConsts;
+import com.digitalojt.web.dto.ApiResponseDto;
 import com.digitalojt.web.entity.CenterInfo;
+import com.digitalojt.web.exception.BusinessLogicException;
+import com.digitalojt.web.exception.ResourceNotFoundException;
 import com.digitalojt.web.form.CenterInfoForm;
 import com.digitalojt.web.service.CenterInfoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 在庫センター情報画面のコントローラークラス
@@ -27,11 +39,29 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @Controller
-@RequiredArgsConstructor
 public class CenterInfoController extends AbstractController {
 
 	/** センター情報 サービス */
 	private final CenterInfoService centerInfoService;
+	
+	/** ロガー */
+	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CenterInfoController.class);
+
+	// Jackson ObjectMapper
+	private final ObjectMapper objectMapper;
+	
+	/**
+     * コンストラクタ
+     * 
+     * @param centerInfoService センター情報サービス
+     */
+	public CenterInfoController(CenterInfoService centerInfoService) {
+		this.centerInfoService = centerInfoService;
+		// ObjectMapperの設定
+		this.objectMapper = new ObjectMapper()
+				.registerModule(new JavaTimeModule())
+				.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+	}
 
 	/**
 	 * 都道府県Enumをリストに変換
@@ -52,27 +82,133 @@ public class CenterInfoController extends AbstractController {
 	@GetMapping(UrlConsts.CENTER_INFO)
 	public String index(Model model) {
 		logStart(LogMessage.HTTP_GET);
+		logger.info("在庫センター情報画面の初期表示処理を開始します");
 
 		// 在庫センター情報画面に表示するデータを取得
 		List<CenterInfo> centerInfoList = centerInfoService.getCenterInfoData();
+		logger.info("取得したセンター情報データ: {}件", centerInfoList.size());
 
 		// 画面表示用に商品情報リストをセット
 		model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST, centerInfoList);
+		
+		// centerInfoListをJSON文字列に変換してモデルに追加
+		try {
+			// デバッグ情報
+			logger.debug("JSON変換前のデータ件数: {}", centerInfoList.size());
+			
+			// JSON文字列に変換
+			String centerInfoJson = objectMapper.writeValueAsString(centerInfoList);
+			
+			// デバッグログ
+			if (centerInfoList.isEmpty()) {
+				logger.debug("変換されたJSON (空リスト): []");
+			} else {
+				logger.debug("変換されたJSON（一部）: {}", 
+					centerInfoJson.length() > 100 ? centerInfoJson.substring(0, 100) + "..." : centerInfoJson);
+			}
+			
+			model.addAttribute("centerInfoJson", centerInfoJson);
+			logger.info("初期データをモデルに設定しました: centerInfoJson");
+		} catch (Exception e) {
+			// JSON変換エラー
+			logException(LogMessage.HTTP_GET, "JSON変換エラー: " + e.getMessage());
+			logger.error("JSON変換エラーの詳細", e);
+			model.addAttribute("centerInfoJson", "[]");
+			logger.warn("JSONエラーのため、空の配列をモデルに設定しました");
+		}
 
 		logEnd(LogMessage.HTTP_GET);
+		logger.info("在庫センター情報画面の初期表示処理が完了しました（表示テンプレート: {}）", UrlConsts.CENTER_INFO_INDEX);
 
 		return UrlConsts.CENTER_INFO_INDEX;
 	}
 
 	/**
-	 * 検索結果表示
+	 * 検索結果表示（JSON形式）
 	 * 
 	 * @param model
 	 * @param form
-	 * @return
+	 * @param bindingResult
+	 * @return 標準化されたJSON応答（ApiResponseDto）
 	 */
-	@GetMapping(UrlConsts.CENTER_INFO_SEARCH)
-	public String search(Model model, @Valid CenterInfoForm form, BindingResult bindingResult) {
+	@GetMapping(value = UrlConsts.CENTER_INFO_SEARCH, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<ApiResponseDto<List<CenterInfo>>> search(Model model, @Valid CenterInfoForm form, BindingResult bindingResult) {
+		logStart(LogMessage.HTTP_GET);
+		logger.info("在庫センター情報の検索APIが呼び出されました");
+		
+		// 入力値のバリデーションチェック
+		if (bindingResult.hasErrors()) {
+			logger.warn("検索条件のバリデーションエラー: {}", bindingResult.getAllErrors());
+			return GlobalExceptionHandler.handleValidationError(bindingResult);
+		}
+		
+		try {
+			// リクエストパラメータのログ出力
+			logSearchParameters(form);
+	
+			// 検索条件に基づいて在庫センター情報を取得
+			// 2025/05/16 機能改修 現在容量範囲が検索できるため、検索項目引数を追加する
+			List<CenterInfo> centerInfoList = centerInfoService.getCenterInfoData(
+					form.getCenterName(), 
+					form.getRegion(),
+					form.getStorageCapacityFrom(),
+					form.getStorageCapacityTo());
+	
+			logger.info("検索結果: {}件のデータが見つかりました", centerInfoList.size());
+			
+			// デバッグ：検索結果のJSONシリアライズ確認
+			try {
+				logger.debug("JSON変換前の検索結果: {} 件", centerInfoList.size());
+				String resultJson = objectMapper.writeValueAsString(centerInfoList);
+				logger.debug("検索結果のJSON変換: {} 文字", resultJson.length());
+				if (centerInfoList.size() > 0) {
+					logger.debug("JSON変換サンプル (最初の1件): {}",
+							objectMapper.writeValueAsString(centerInfoList.get(0)));
+				}
+			} catch (Exception ex) {
+				logger.warn("検索結果のJSON変換デバッグ中にエラー", ex);
+			}
+			
+			logEnd(LogMessage.HTTP_GET);
+			
+			// 検索結果がない場合は、成功レスポンスを空リストで返却
+			if (centerInfoList.isEmpty()) {
+				ApiResponseDto<List<CenterInfo>> response = ApiResponseDto.success(
+						Collections.emptyList(), 
+						"該当するデータはありません");
+				logger.info("検索結果なしのレスポンスを返します");
+				return ResponseEntity.ok(response);
+			}
+			
+			// 成功レスポンスを返却
+			ApiResponseDto<List<CenterInfo>> response = ApiResponseDto.success(
+					centerInfoList, 
+					String.format("%d件のデータが見つかりました", centerInfoList.size()));
+			logger.info("検索結果レスポンスを返します: {}件", centerInfoList.size());
+			return ResponseEntity.ok(response);
+			
+		} catch (Exception e) {
+			// 予期せぬエラーをログ出力
+			logger.error("検索処理中にエラーが発生しました", e);
+			
+			// サーバーエラーレスポンスを返却
+			ApiResponseDto<List<CenterInfo>> response = ApiResponseDto.serverError(
+					String.format("検索処理中にエラーが発生しました: %s", e.getMessage()));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+	
+	/**
+	 * HTML形式の検索結果表示（通常のフォーム送信時に使用）
+	 * 
+	 * @param model
+	 * @param form
+	 * @param bindingResult
+	 * @return HTML応答
+	 */
+	@GetMapping(value = UrlConsts.CENTER_INFO_SEARCH, produces = "text/html")
+	public String searchHtml(Model model, @Valid CenterInfoForm form, BindingResult bindingResult) {
 		logStart(LogMessage.HTTP_GET);
 
 		// 入力値のバリデーションチェック
@@ -80,21 +216,79 @@ public class CenterInfoController extends AbstractController {
 			handleValidationError(model, bindingResult, form);
 			return UrlConsts.CENTER_INFO_INDEX;
 		}
-
+		
+		try {
+			// リクエストパラメータのログ出力
+			logSearchParameters(form);
+	
+			// 検索条件に基づいて在庫センター情報を取得
+			List<CenterInfo> centerInfoList = centerInfoService.getCenterInfoData(
+					form.getCenterName(), 
+					form.getRegion(),
+					form.getStorageCapacityFrom(),
+					form.getStorageCapacityTo());
+	
+			// 画面表示用に在庫センター情報リストをセット
+			model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST, centerInfoList);
+			
+			// centerInfoListをJSON文字列に変換してモデルに追加
+			try {
+				String centerInfoJson = objectMapper.writeValueAsString(centerInfoList);
+				model.addAttribute("centerInfoJson", centerInfoJson);
+			} catch (Exception e) {
+				// JSON変換エラー
+				logException(LogMessage.HTTP_GET, "JSON変換エラー: " + e.getMessage());
+				model.addAttribute("centerInfoJson", "[]");
+			}
+			
+			// 検索結果が空の場合
+			if (centerInfoList.isEmpty()) {
+				model.addAttribute("infoMessage", "該当するデータはありません");
+			} else {
+				model.addAttribute("infoMessage", String.format("%d件のデータが見つかりました", centerInfoList.size()));
+			}
+			
+			logEnd(LogMessage.HTTP_GET);
+			
+			return UrlConsts.CENTER_INFO_INDEX;
+			
+		} catch (Exception e) {
+			// 予期せぬエラーをログ出力
+			logger.error("検索処理中にエラーが発生しました", e);
+			
+			// エラーメッセージを設定して画面に戻す
+			model.addAttribute(LogMessage.FLASH_ATTRIBUTE_ERROR, "データ検索中にエラーが発生しました。システム管理者に連絡してください。");
+			return UrlConsts.CENTER_INFO_INDEX;
+		}
+	}
+	
+	/**
+	 * 検索結果をJSON形式で返却（APIエンドポイント用）
+	 * 
+	 * @param form
+	 * @return
+	 */
+	@GetMapping(UrlConsts.CENTER_INFO_SEARCH + "/api")
+	@ResponseBody
+	public List<CenterInfo> searchApi(@Valid CenterInfoForm form) {
 		// 検索条件に基づいて在庫センター情報を取得
-		// 2025/05/16 機能改修 現在容量範囲が検索できるため、検索項目引数を追加する
-				List<CenterInfo> centerInfoList = centerInfoService.getCenterInfoData(
-						form.getCenterName(), 
-						form.getRegion(),
-						form.getStorageCapacityFrom(),
-						form.getStorageCapacityTo());
+		return centerInfoService.getCenterInfoData(
+				form.getCenterName(), 
+				form.getRegion(),
+				form.getStorageCapacityFrom(), 
+				form.getStorageCapacityTo());
+	}
 
-		// 画面表示用に商品情報リストをセット
-		model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST, centerInfoList);
-
-		logEnd(LogMessage.HTTP_GET);
-
-		return UrlConsts.CENTER_INFO_INDEX;
+	/**
+	 * 検索パラメータのログ出力
+	 * 
+	 * @param form 検索フォーム
+	 */
+	private void logSearchParameters(CenterInfoForm form) {
+		logger.info("検索条件 - センター名: {}", form.getCenterName());
+		logger.info("検索条件 - 都道府県: {}", form.getRegion());
+		logger.info("検索条件 - 容量(From): {}", form.getStorageCapacityFrom());
+		logger.info("検索条件 - 容量(To): {}", form.getStorageCapacityTo());
 	}
 
 	/**

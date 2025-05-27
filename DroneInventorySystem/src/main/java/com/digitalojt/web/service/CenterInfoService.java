@@ -2,6 +2,7 @@ package com.digitalojt.web.service;
 
 import java.util.List;
 
+import com.digitalojt.web.exception.BusinessLogicException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,46 +30,58 @@ public class CenterInfoService {
 	/**
 	 * 在庫センター情報を全建検索で取得
 	 * 
-	 * @return
+	 * @return 全在庫センター情報のリスト
 	 */
 	public List<CenterInfo> getCenterInfoData() {
-		return repository.findAll();
+		logger.info("在庫センター情報の全件検索を実行");
+		List<CenterInfo> results = repository.findAll();
+		logger.info("全件検索結果: {}件のデータを取得", results.size());
+		return results;
 	}
 
 	/**
 	 * 引数に合致する在庫センター情報を取得
 	 * 2025/05/16 機能改修 現在容量範囲が検索できるため、検索項目引数を追加する
 	 * 
-	 * @param centerName
-	 * @param region 
-	 * @return 条件に一致した在庫センター情報のリストを返す
+	 * @param centerName センター名
+	 * @param region 地域
+	 * @param storageCapacityFrom 容量範囲（最小）
+	 * @param storageCapacityTo 容量範囲（最大）
+	 * @return 条件に合致する在庫センター情報のリスト
+	 * @throws BusinessLogicException ビジネスロジックエラー発生時
 	 */
-	public List<CenterInfo> getCenterInfoData(
-			String centerName,
-			String region,
-			// 2025/05/21 現在容量Fromと現在容量Toのパラメータを追加する
-			Integer storageCapacityFrom,
-			Integer storageCapacityTo) {
+	public List<CenterInfo> getCenterInfoData(String centerName, String region, Integer storageCapacityFrom, Integer storageCapacityTo) {
+		// 検索条件の正規化
+		String normalizedCenterName = (centerName == null) ? "" : centerName.trim();
+		String normalizedRegion = (region == null) ? "" : region.trim();
 		
-		// 2025/05/21 ログ出力：現在容量の範囲（From-To）が指定された場合にログ出力
-	    // 2025/05/21 null チェックを行うことで、未指定の場合でもログに「未指定」と記録される
-	    // 2025/05/21 検索条件が正しく渡されているか、あとからログで検証しやすくするため
-		if (storageCapacityFrom != null || storageCapacityTo != null) {
-			logger.info("検索パラメータ - 現在容量範囲: From={}, To={}",
-					storageCapacityFrom != null ? storageCapacityFrom : "未指定",
-					storageCapacityTo != null ? storageCapacityTo : "未指定");
-		}else {
-			
-			// 2025/05/21 現在容量の条件が完全に未指定の場合も、ログに明示的に出力しておく
-			logger.info("検索パラメータ - 現在容量範囲: 指定なし");
+		// 容量の範囲設定（nullの場合はデフォルト値を使用）
+		Integer fromCapacity = (storageCapacityFrom == null) ? Integer.MIN_VALUE : storageCapacityFrom;
+		Integer toCapacity = (storageCapacityTo == null) ? Integer.MAX_VALUE : storageCapacityTo;
+		
+		// 容量の範囲チェック
+		if (fromCapacity > toCapacity) {
+			logger.warn("容量範囲が不正: From={}, To={}", fromCapacity, toCapacity);
+			throw new BusinessLogicException("容量の範囲指定が不正です。From値はTo値以下である必要があります。");
 		}
 		
+		// 検索条件のログ出力
+		logger.info("在庫センター情報の条件検索を実行: centerName=[{}], region=[{}], capacityFrom={}, capacityTo={}", 
+				normalizedCenterName, normalizedRegion, fromCapacity, toCapacity);
 		
-		return repository.findActiveCenters(
-				centerName,
-				region,
-				// 2025/05/21 現在容量Fromと現在容量Toのパラメータを追加する
-				storageCapacityFrom,
-				storageCapacityTo);
+		try {
+			// リポジトリを使用して検索を実行
+			List<CenterInfo> results = repository.findActiveCenters(
+					normalizedCenterName, normalizedRegion, fromCapacity, toCapacity);
+			
+			// 検索結果のログ出力
+			logger.info("条件検索結果: {}件のデータを取得", results.size());
+			
+			return results;
+		} catch (Exception e) {
+			// データアクセスエラーをログに記録
+			logger.error("データベース検索中にエラーが発生しました", e);
+			throw e; // 上位層で処理するためにスローし直す
+		}
 	}
 }

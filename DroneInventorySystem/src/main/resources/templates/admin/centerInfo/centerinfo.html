@@ -8,102 +8,432 @@
   </head>
 
   <body>
-	<div class="card shadow mb-4">
+    <!-- Alpine.jsをCDNから読み込み -->
+    <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    
+    <style>
+      /* フォームレイアウト調整 */
+      .form-inline label {
+        margin-right: 0.5rem;
+        margin-bottom: 0;
+      }
+      
+      .form-inline .form-control {
+        margin-right: 1rem;
+      }
+      
+      /* デバッグ用スタイル */
+      .debug-info {
+        margin-top: 10px;
+        padding: 8px;
+        background-color: #f8f9fc;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+    
+    <!-- 初期データをJSON形式で埋め込む -->
+    <script th:inline="javascript">
+      // 初期データをグローバル変数として使用できるようにする
+      var initialCenterData = /*[[${centerInfoJson}]]*/ '[]';
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('初期データ埋め込み完了:', typeof initialCenterData);
+      });
+    </script>
+    
+    <div class="card shadow mb-4" x-data="centerInfo">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">在庫センター情報</h6>
+      </div>
 
-		<div class="card-header py-3">
-			<h6 class="m-0 font-weight-bold text-primary">在庫センター情報</h6>
-		</div>
+      <div class="card-body">
+        <!-- 通知メッセージ (ポップアップ) -->
+        <div x-show="notification.show" x-transition 
+          class="alert" :class="notification.type === 'success' ? 'alert-success' : 'alert-danger'" role="alert">
+          <span x-text="notification.message"></span>
+          <button type="button" class="close" @click="notification.show = false">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        
+        <!-- 検索フォーム -->
+        <div class="search-container mb-3">
+          <form id="searchForm" class="form-inline" @submit.prevent="searchCenters()">
+            <label for="centerName" class="mr-2">検索条件</label>
+            
+            <label for="centerName" class="mr-2">センター名</label>
+            <input type="text" id="centerName" name="centerName" class="form-control mr-2" x-model="searchParams.centerName">
+            
+            <label for="region" class="mr-2">都道府県</label>
+            <select id="region" name="region" class="form-control mr-2" x-model="searchParams.region">
+              <option value="">選択してください</option>
+              <option th:each="region : ${regions}" 
+                th:value="${region.name}" 
+                th:text="${region.name}"></option>
+            </select>
+            
+            <!--2025/05/16 機能改修 現在容量範囲が検索できるため、検索項目に「現在容量」のFrom-Toを追加する-->
+            <label for="storageCapacityFrom" class="mr-2">現在容量(㎥)</label>
+            <input type="text" id="storageCapacityFrom" name="storageCapacityFrom" 
+              class="form-control mr-2" maxlength="10" 
+              x-model="searchParams.storageCapacityFrom"
+              @input="validateCapacityInput($event, 'storageCapacityFrom')"
+              :class="{'is-invalid': validationErrors.storageCapacityFrom}">
+            <div class="invalid-feedback" x-show="validationErrors.storageCapacityFrom" x-text="validationErrors.storageCapacityFrom"></div>
 
-		<div class="card-body">
-			
-			<!-- 検索フォーム -->
-			<div class="search-container">
-				<form id="searchForm" class="form-inline" method="get" th:action="@{'/admin/centerInfo/search'}" th:object="${CenterInfoForm}">
-					<label for="searchTerm" class="mr-2">検索条件</label>
-					
-					<label for="searchTerm" class="mr-2">センター名</label>
- 					<input type="text" id="searchTerm" name="centerName" class="form-control mr-2">
- 					
- 					<label for="searchTerm" class="mr-2">都道府県</label>
- 					<select id="searchTerm" name="region" class="form-control mr-2">
-						 <option value="">選択してください</option>
-						 <option th:each="region : ${regions}" 
-						 	th:value="${region.name}" 
-						 	th:text="${region.name}"></option>
-					</select>
-					
-					<!--2025/05/16 機能改修 現在容量範囲が検索できるため、検索項目に「現在容量」のFrom-Toを追加する-->
-					<label for="searchTerm" class="mr-2">現在容量(㎥)</label>
- 					<input type="text" id="storageCapacityFrom" name="storageCapacityFrom" class="form-control mr-2"  maxlength="10">
+            <span class="mr-2">～</span>
 
- 					<span class="mr-2">～</span>
-
- 					<input type="text" id="storageCapacityTo" name="storageCapacityTo" class="form-control mr-2" maxlength="10">
-					
- 					<button type="submit" class="btn btn-primary" onclick="centerInfoComponent()">検索</button>
- 				</form>
- 				
- 				<!-- エラーメッセージの表示 -->
- 				<div th:if="${errorMsg}" class="text-danger">
-					 <p th:text="${errorMsg}"></p>
-				</div>
-			</div>
- 			
-			<!-- 在庫センター情報テーブル -->
-			<div class="table-responsive">
-				<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-					<thead>
-						<tr>
-							<th>センター名</th>
-							<th>住所</th>
-							<th>連絡先</th>
-							<th>管理者名</th>
-							<th>最大容量(㎥)</th>
-							<th>現在容量(㎥)</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="item : ${centerInfoList}">
-							<td> [[${item.centerName}]] </td>
-							<td> [[${item.address}]] </td>
-							<td> [[${item.phoneNumber}]] </td>
-							<td> [[${item.managerName}]] </td>
-							<td> [[${item.maxStorageCapacity}]] </td>
-							<td> [[${item.currentStorageCapacity}]] </td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-	        <!-- 検索結果がない場合のメッセージ -->
-			<div th:if="${#lists.isEmpty(centerInfoList) and errorMessage == null}" class="text-muted">
-			    <p>検索結果がありません。</p>
-			</div>
-		</div>
-	</div>
-	
-	  
-  <script>
-	//2025/05/19 在庫センター情報の検索処理を行う非同期関数の追加
-    async function centerInfoComponent() {
-		document.getElementById("searchForm"),onsubmit=async function(e){
-			e.preventDefault();
-		}
-		
-		
-		//2025/05/19 入力された検索条件をURLパラメータ形式に変換
-		const params = new URLSearchParams({
-			centerName: document.getElementsByName("centerName")[0].value,
-			region: document.getElementsByName("region")[0].value,
-			storageCapacityFrom: document.getElementsByName('storageCapacityFrom')[0].value,
-			storageCapacityTo: document.getElementsByName('storageCapacityTo')[0].value});
-			
-		//2025/05/19 パラメータ付きで検索APIを呼び出し
-		const res = await fetch('/admin/centerInfo/search?' + params);
-		
-		//2025/05/19 レスポンスのJSONデータを取得
-		const data = await res.json();
-		
- }
-  </script>
+            <input type="text" id="storageCapacityTo" name="storageCapacityTo" 
+              class="form-control mr-2" maxlength="10" 
+              x-model="searchParams.storageCapacityTo"
+              @input="validateCapacityInput($event, 'storageCapacityTo')"
+              :class="{'is-invalid': validationErrors.storageCapacityTo}">
+            <div class="invalid-feedback" x-show="validationErrors.storageCapacityTo" x-text="validationErrors.storageCapacityTo"></div>
+            
+            <div class="invalid-feedback d-block" x-show="validationErrors.fromToComparison" x-text="validationErrors.fromToComparison"></div>
+            
+            <button type="submit" class="btn btn-primary" :disabled="isSearchButtonDisabled">
+              <span x-show="!isLoading">検索</span>
+              <span x-show="isLoading" class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
+              <span x-show="isLoading">検索中...</span>
+            </button>
+          </form>
+          
+          <!-- エラーメッセージの表示 -->
+          <div th:if="${errorMsg}" class="text-danger mt-2">
+            <p th:text="${errorMsg}"></p>
+          </div>
+        </div>
+         
+        <!-- 在庫センター情報テーブル -->
+        <div class="table-responsive">
+          <!-- ローディング表示 -->
+          <div x-show="isLoading" class="text-center my-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <p class="mt-2" x-show="isAjaxSearch">検索結果を読み込み中...</p>
+            <p class="mt-2" x-show="!isAjaxSearch">初期データを読み込み中...</p>
+          </div>
+          
+          <!-- データテーブル -->
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" x-show="!isLoading && !isResultEmpty">
+            <thead>
+              <tr>
+                <th>センター名</th>
+                <th>住所</th>
+                <th>連絡先</th>
+                <th>管理者名</th>
+                <th>最大容量(㎥)</th>
+                <th>現在容量(㎥)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(item, index) in displayData" :key="index">
+                <tr>
+                  <td x-text="item.centerName || ''"></td>
+                  <td x-text="item.address || ''"></td>
+                  <td x-text="item.phoneNumber || ''"></td>
+                  <td x-text="item.managerName || ''"></td>
+                  <td x-text="item.maxStorageCapacity || ''"></td>
+                  <td x-text="item.currentStorageCapacity || ''"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- 検索結果がない場合のメッセージ -->
+        <div x-show="!isLoading && isResultEmpty" class="alert alert-info mt-3">
+          <p class="mb-0">該当するデータはありません。</p>
+        </div>
+        
+        <!-- デバッグ情報 -->
+        <div class="debug-info mt-4">
+          <h6>システム状態（デバッグ用）:</h6>
+          <div><strong>読み込み状態:</strong> <span x-text="isLoading ? '読み込み中' : '完了'"></span></div>
+          <div><strong>AJAX検索:</strong> <span x-text="isAjaxSearch ? '検索モード' : '初期表示'"></span></div>
+          <div><strong>初期データ件数:</strong> <span x-text="centerInfoList.length"></span></div>
+          <div><strong>検索結果件数:</strong> <span x-text="searchResults.length"></span></div>
+          <div><strong>表示データ件数:</strong> <span x-text="displayData.length"></span></div>
+          <div>
+            <button class="btn btn-sm btn-secondary mt-2" @click="resetState()">状態リセット</button>
+            <button class="btn btn-sm btn-primary mt-2 ml-2" @click="reloadData()">初期データ再読込</button>
+            <button class="btn btn-sm btn-danger mt-2 ml-2" @click="location.reload()">ページ再読込</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Alpine.jsコンポーネント定義 -->
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('centerInfo', () => ({
+          searchParams: {
+            centerName: '',
+            region: '',
+            storageCapacityFrom: '',
+            storageCapacityTo: ''
+          },
+          validationErrors: {
+            storageCapacityFrom: '',
+            storageCapacityTo: '',
+            fromToComparison: ''
+          },
+          isLoading: true,
+          isAjaxSearch: false,
+          notification: {
+            show: false,
+            message: '',
+            type: 'success'
+          },
+          centerInfoList: [],
+          searchResults: [],
+          
+          // 初期化 (自動実行)
+          init() {
+            console.log('センター情報コンポーネント初期化');
+            this.reloadData();
+          },
+          
+          // 表示データ取得 (計算プロパティ)
+          get displayData() {
+            return this.isAjaxSearch ? this.searchResults : this.centerInfoList;
+          },
+          
+          // 初期データ読み込み
+          reloadData() {
+            console.log('初期データ読み込み開始');
+            this.isLoading = true;
+            this.isAjaxSearch = false;
+            
+            setTimeout(() => {
+              try {
+                // JSON文字列の取得
+                let data = '';
+                
+                if (typeof initialCenterData === 'string') {
+                  data = initialCenterData;
+                } else if (document.getElementById('initialData')) {
+                  data = document.getElementById('initialData').value;
+                }
+                
+                if (!data || data.trim() === '') {
+                  console.warn('初期データが空です');
+                  this.centerInfoList = [];
+                  return;
+                }
+                
+                // JSONパース
+                try {
+                  let parsedData = JSON.parse(data);
+                  console.log('JSONパース成功:', typeof parsedData);
+                  
+                  if (Array.isArray(parsedData)) {
+                    this.centerInfoList = parsedData;
+                  } else if (parsedData && parsedData.results && Array.isArray(parsedData.results)) {
+                    this.centerInfoList = parsedData.results;
+                  } else {
+                    this.centerInfoList = [];
+                  }
+                  
+                  console.log('初期データ読み込み完了:', this.centerInfoList.length + '件');
+                } catch (e) {
+                  console.error('JSONパースエラー:', e);
+                  this.notification = {
+                    show: true,
+                    message: 'データの解析に失敗しました',
+                    type: 'danger'
+                  };
+                  this.centerInfoList = [];
+                }
+              } catch (error) {
+                console.error('データ読み込みエラー:', error);
+                this.notification = {
+                  show: true,
+                  message: 'データの読み込みに失敗しました',
+                  type: 'danger'
+                };
+                this.centerInfoList = [];
+              } finally {
+                this.isLoading = false;
+              }
+            }, 500); // わずかな遅延を入れて、UIが更新される時間を確保
+          },
+          
+          // 状態リセット
+          resetState() {
+            this.isLoading = false;
+            this.isAjaxSearch = false;
+            this.notification.show = false;
+          },
+          
+          // 数値入力のバリデーション
+          validateCapacityInput(event, field) {
+            const value = event.target.value;
+            
+            if (value !== '' && !/^\d+$/.test(value)) {
+              this.validationErrors[field] = '数値のみ入力可能です';
+              return false;
+            } else {
+              this.validationErrors[field] = '';
+            }
+            
+            this.validateFromTo();
+            return true;
+          },
+          
+          // From-To の比較検証
+          validateFromTo() {
+            const from = parseInt(this.searchParams.storageCapacityFrom) || 0;
+            const to = parseInt(this.searchParams.storageCapacityTo) || 0;
+            
+            if (this.searchParams.storageCapacityFrom !== '' && 
+                this.searchParams.storageCapacityTo !== '' && 
+                from > to) {
+              this.validationErrors.fromToComparison = '容量(From)は容量(To)以下である必要があります';
+              return false;
+            } else {
+              this.validationErrors.fromToComparison = '';
+              return true;
+            }
+          },
+          
+          // 検索ボタンの無効化条件
+          get isSearchButtonDisabled() {
+            return this.validationErrors.storageCapacityFrom || 
+                   this.validationErrors.storageCapacityTo || 
+                   this.validationErrors.fromToComparison ||
+                   this.isLoading;
+          },
+          
+          // 検索結果が空かどうか
+          get isResultEmpty() {
+            return this.displayData.length === 0;
+          },
+          
+          // 検索処理
+          async searchCenters() {
+            console.log('検索処理開始');
+            
+            if (this.isSearchButtonDisabled) {
+              console.log('検索ボタンが無効: 処理中止');
+              return;
+            }
+            
+            this.isLoading = true;
+            this.isAjaxSearch = true;
+            this.searchResults = [];
+            
+            try {
+              // URL パラメータの作成
+              const params = new URLSearchParams();
+              
+              // 必ず1つは検索条件を入力する必要がある
+              if (this.searchParams.centerName) {
+                params.append('centerName', this.searchParams.centerName);
+              }
+              
+              if (this.searchParams.region) {
+                params.append('region', this.searchParams.region);
+              }
+              
+              // 数値パラメータは文字列に変換しない場合はnullになる可能性がある
+              if (this.searchParams.storageCapacityFrom) {
+                params.append('storageCapacityFrom', String(this.searchParams.storageCapacityFrom));
+              }
+              
+              if (this.searchParams.storageCapacityTo) {
+                params.append('storageCapacityTo', String(this.searchParams.storageCapacityTo));
+              }
+              
+              // もしすべてのパラメータが空の場合は、空のパラメータを追加（全件検索を実行）
+              if (params.toString() === '') {
+                // 空の値で全件検索をサポート
+                params.append('centerName', '');
+                params.append('region', '');
+              }
+              
+              // APIリクエストのURLを組み立て
+              console.log('検索パラメータ:', this.searchParams);
+              
+              // URLと検索パラメータを設定
+              // URLパスはUrlConstsクラスの定義に合わせる（/admin/centerInfo/search）
+              const apiUrl = '/admin/centerInfo/search';
+              console.log('API呼び出し:', `${apiUrl}?${params.toString()}`);
+              
+              // API呼び出し
+              const response = await fetch(`${apiUrl}?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest' // Ajaxリクエストと識別
+                },
+                credentials: 'same-origin' // 同一オリジンのみCookieを送信
+              });
+              
+              if (!response.ok) {
+                throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+              }
+              
+              // レスポンスデータを解析
+              const data = await response.json();
+              console.log('API応答データ:', data);
+              
+              // 結果処理
+              if (data.results && Array.isArray(data.results)) {
+                this.searchResults = data.results;
+              } else if (Array.isArray(data)) {
+                this.searchResults = data;
+              } else {
+                const possibleResultsFields = ['data', 'items', 'content', 'list'];
+                let resultsFound = false;
+                
+                for (const field of possibleResultsFields) {
+                  if (data[field] && Array.isArray(data[field])) {
+                    this.searchResults = data[field];
+                    resultsFound = true;
+                    break;
+                  }
+                }
+                
+                if (!resultsFound) {
+                  this.searchResults = [];
+                }
+              }
+              
+              // 通知表示
+              this.notification = {
+                show: true,
+                message: `検索が完了しました (${this.searchResults.length}件)`,
+                type: 'success'
+              };
+              
+              console.log('検索結果件数:', this.searchResults.length);
+              
+            } catch (error) {
+              console.error('検索エラー:', error);
+              
+              this.notification = {
+                show: true,
+                message: error.message || '検索中にエラーが発生しました',
+                type: 'danger'
+              };
+              
+              this.searchResults = [];
+            } finally {
+              this.isLoading = false;
+            }
+          }
+        }))
+      })
+    </script>
+    
+    <!-- 初期データをhidden要素として配置（バックアップ）-->
+    <input type="hidden" id="initialData" th:value="${centerInfoJson}">
   </body>
 </html>

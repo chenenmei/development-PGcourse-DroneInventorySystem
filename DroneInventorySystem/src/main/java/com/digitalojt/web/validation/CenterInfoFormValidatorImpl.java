@@ -24,55 +24,45 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
      */
     @Override
     public boolean isValid(CenterInfoForm form, ConstraintValidatorContext context) {
-        // フィールドがすべて空である場合にエラー処理
-        if (isAllFieldsEmpty(form)) {
+        try {
+            // 検索画面では全ての項目が空でも有効とする（全件検索として処理）
+            if (isAllFieldsEmpty(form)) {
+                // 2025/05/23 仕様変更: 全フィールドが空の場合も有効とする（全件検索として処理）
+                return true;
+            }
+            
+            // センター名のバリデーション - 入力されている場合のみ検証
+            if (form.getCenterName() != null && !form.getCenterName().isEmpty()) {
+                // 不正文字が含まれる場合
+                if (containsInvalidCharacter(form.getCenterName())) {
+                    context.disableDefaultConstraintViolation();
+                    context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.INVALID_INPUT_ERROR_MESSAGE))
+                           .addConstraintViolation();
+                    return false;
+                }
+            }
+    
+            // 都道府県のバリデーション - 入力されている場合のみ検証
+            if (form.getRegion() != null && !form.getRegion().isEmpty() && !isValidRegion(form.getRegion())) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.INVALID_INPUT_ERROR_MESSAGE))
+                       .addConstraintViolation();
+                return false;
+            }
+            
+            // 両方の容量が入力されている場合のみFromToの比較検証を行う
+            if (form.getStorageCapacityFrom() != null && form.getStorageCapacityTo() != null) {
+                if (form.getStorageCapacityFrom() > form.getStorageCapacityTo()) {
+                    context.disableDefaultConstraintViolation();
+                    context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.FROM_TO_ERROR_MESSAGE))
+                           .addConstraintViolation();
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            // 予期せぬ例外が発生した場合は、エラーメッセージを設定してfalseを返す
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.ALL_FIELDS_EMPTY_ERROR_MESSAGE))
-                   .addConstraintViolation();
-            return false;
-        }
-        
-        // センター名が不正文字に含まれる場合にエラー処理
-        if (isValidCenterName(form.getCenterName())) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.ALL_FIELDS_EMPTY_ERROR_MESSAGE))
-                   .addConstraintViolation();
-            return false;
-        }
-
-        // 都道府県のバリデーション
-        if (!isValidRegion(form.getRegion())) {
-            // 都道府県が無効な場合、エラーメッセージをスロー
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.ALL_FIELDS_EMPTY_ERROR_MESSAGE))
-                   .addConstraintViolation();
-            return false;
-        }
-        
-        // 2025/05/20　現在容量_Fromのバリデーション
-        if (!isValidStorageCapacityForm(form.getStorageCapacityFrom())) {
-            // 都道府県が無効な場合、エラーメッセージをスロー
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.INVALID_INPUT_ERROR_MESSAGE))
-                   .addConstraintViolation();
-            return false;
-        }
-        
-        // 2025/05/20　現在容量_Toのバリデーション
-        if (!isValidStorageCapacityTo(form.getStorageCapacityTo())) {
-            // 都道府県が無効な場合、エラーメッセージをスロー
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.INVALID_INPUT_ERROR_MESSAGE))
-                   .addConstraintViolation();
-            return false;
-        }
-        
-        
-        // 2025/05/20　現在容量_FromToのバリデーション
-        if (!isValidStorageCapacityFromTo(form.getStorageCapacityFrom(),form.getStorageCapacityTo())) {
-            // 都道府県が無効な場合、エラーメッセージをスロー
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.FROM_TO_ERROR_MESSAGE))
+            context.buildConstraintViolationWithTemplate("バリデーション処理中にエラーが発生しました")
                    .addConstraintViolation();
             return false;
         }
@@ -82,11 +72,15 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
     }
     
     /**
-     * 文字列の不正文字チェックを実施する
-     * @param input
-     * @return
+     * 文字列に不正文字が含まれているかチェックする
+     * @param input チェックする文字列
+     * @return 不正文字が含まれていればtrue、それ以外はfalse
      */
-    private boolean isValidCenterName(String input) {
+    private boolean containsInvalidCharacter(String input) {
+        if (input == null || input.isEmpty()) {
+            return false;
+        }
+        
         // 文字列の各文字を1つずつチェック
         for (char c : input.toCharArray()) {
             // 不正文字が含まれているか確認
@@ -95,50 +89,6 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
             }
         }
         return false;
-    }
-    
-    /**
-     * 2025/05/20　現在容量_From文字列の不正文字チェックを実施する
-     * @param input
-     * @return
-     */
-    private boolean isValidStorageCapacityForm(Integer input) {
-    	// 数字以外の文字列であるか確認
-    	if (input == null) {
-    		return false;
-    	} else {
-    		return true;
-    	}
-    	
-    }
-    
-    /**
-     * 2025/05/20　現在容量_To文字列の不正文字チェックを実施する
-     * @param input
-     * @return
-     */
-    private boolean isValidStorageCapacityTo(Integer input) {
-    	// 数字以外の文字列であるか確認
-    	if (input == null) {
-    		return false;
-    	} else {
-    		return true;
-    	}
-    	
-    }
-    
-    /**
-     * 2025/05/20　現在容量_Fromより現在容量_Toの値が大きい場合、警告メッセージを表示する
-     * @param input
-     * @return
-     */
-    private boolean isValidStorageCapacityFromTo(Integer from, Integer to) {
-    	if (from <= to) {
-    		return true;
-    	} else {
-    		return false;
-    	}
-    	
     }
     
     /**
@@ -185,7 +135,12 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
      * @return すべてのフィールドがnullまたは空の場合はtrue、それ以外はfalse
      */
     private boolean isAllFieldsEmpty(CenterInfoForm form) {
-        // センター名または都道府県がnullまたは空の場合にtrueを返す
-        return form.getCenterName().isEmpty() && form.getRegion().isEmpty();
+        // センター名、都道府県、容量Fromと容量Toが全てnullまたは空の場合にtrueを返す
+        boolean centerNameEmpty = form.getCenterName() == null || form.getCenterName().isEmpty();
+        boolean regionEmpty = form.getRegion() == null || form.getRegion().isEmpty();
+        boolean capacityFromEmpty = form.getStorageCapacityFrom() == null;
+        boolean capacityToEmpty = form.getStorageCapacityTo() == null;
+        
+        return centerNameEmpty && regionEmpty && capacityFromEmpty && capacityToEmpty;
     }
 }
