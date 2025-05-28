@@ -70,13 +70,13 @@ public class CenterInfo {
 	 * 最大容量
 	 */
     @Column(name = "max_storage_capacity", nullable = false)
-	private String  maxStorageCapacity;
+	private Integer maxStorageCapacity;
 	
 	/**
 	 * 現在容量
 	 */
     @Column(name = "current_storage_capacity", nullable = false)
-	private String currentStorageCapacity;
+	private Integer currentStorageCapacity;
     
     /**
      * 備考

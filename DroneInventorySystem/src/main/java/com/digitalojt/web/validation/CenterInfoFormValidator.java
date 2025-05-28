@@ -12,7 +12,7 @@ import jakarta.validation.Payload;
 import jakarta.validation.ReportAsSingleViolation;
 
 /**
- * 部品カテゴリー管理画面のバリデーションチェック インターフェース
+ * 在庫センター情報画面のバリデーションチェック インターフェース
  * 
  * @author dotlife
  */

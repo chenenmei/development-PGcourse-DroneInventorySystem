@@ -55,6 +55,8 @@ public class WebSecurityConfig {
                         .logoutSuccessUrl(UrlConsts.LOGIN)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID"))
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(UrlConsts.CENTER_INFO_SEARCH)) // 検索APIはCSRF保護から除外
                 .authenticationProvider(daoAuthenticationProvider()) // Providerを適用
                 .build();
     }
