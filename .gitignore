@@ -1,0 +1,8 @@
+# メンターレビュー用のgitigonore
+docker-compose.yml
+docs/.DS_Store
+mysql-data/*
+DroneInventorySystem/.idea/*
+.DS_Store
+DroneInventorySystem/logs/*
+DroneInventorySystem/target/classes/*
