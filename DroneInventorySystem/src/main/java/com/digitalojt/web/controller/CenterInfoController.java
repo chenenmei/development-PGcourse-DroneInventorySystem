@@ -3,17 +3,16 @@ package com.digitalojt.web.controller;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.digitalojt.web.exception.GlobalExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.digitalojt.web.consts.LogMessage;
@@ -23,6 +22,7 @@ import com.digitalojt.web.consts.UrlConsts;
 import com.digitalojt.web.dto.ApiResponseDto;
 import com.digitalojt.web.entity.CenterInfo;
 import com.digitalojt.web.exception.BusinessLogicException;
+import com.digitalojt.web.exception.GlobalExceptionHandler;
 import com.digitalojt.web.exception.ResourceNotFoundException;
 import com.digitalojt.web.form.CenterInfoForm;
 import com.digitalojt.web.service.CenterInfoService;
@@ -278,6 +278,79 @@ public class CenterInfoController extends AbstractController {
 				form.getStorageCapacityFrom(), 
 				form.getStorageCapacityTo());
 	}
+	
+	
+	/**
+	 * 新規登録画面を表示する
+	 * GET /admin/centerInfo/insert
+	 */
+	@GetMapping(UrlConsts.CENTER_INFO_INSERT)
+	public String showInsertPage(Model model) {
+		model.addAttribute("centerInfoForm", new CenterInfoForm());
+		
+		// templates/admin/centerInfo/centerinfo_insert.html を表示
+		return "admin/centerInfo/centerinfoinsert";
+		
+	}
+	
+	
+	/**
+	 * 在庫センター情報の新規登録（JSON形式）
+	 * 
+	 * <pre>
+	 * - Ajax から JSON ボディで CenterInfoForm を受け取り、
+	 *    正常時は登録した CenterInfo を JSON で返却する。
+	 * - バリデーション NG の場合は GlobalExceptionHandler で標準化済みエラーを返す。
+	 * - 想定外エラー時は HTTP 500 を返却。
+	 * </pre>
+	 * 
+	 * @param form          フロントから送られてくる入力データ
+	 * @param bindingResult バリデーション結果
+	 * @return ApiResponseDto (成功時: 登録済みエンティティ, 失敗時: エラーメッセージ)
+	 */
+	@PostMapping(
+	        value = "/admin/centerInfo/insert",
+	        consumes = "application/json",
+	        produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<ApiResponseDto<CenterInfo>> insert(
+	        @RequestBody @Valid CenterInfoForm form,
+	        BindingResult bindingResult) {
+
+	    logStart(LogMessage.HTTP_POST);
+	    logger.info("在庫センター情報 新規登録API 呼び出し");
+
+	    /* ① バリデーション */
+	    if (bindingResult.hasErrors()) {
+	        logger.warn("バリデーションエラー: {}", bindingResult.getAllErrors());
+	        return GlobalExceptionHandler.handleValidationError(bindingResult);
+	    }
+
+	    try {
+	        /* ② 登録処理 */
+	        CenterInfo saved = centerInfoService.insertCenterInfo(form);
+	        logger.info("登録成功 ID={}", saved.getCenterId());
+
+	        /* ③ 成功レスポンス */
+	        ApiResponseDto<CenterInfo> res =
+	                ApiResponseDto.success(saved, "センター情報を登録しました");
+	        logEnd(LogMessage.HTTP_POST);
+	        return ResponseEntity.status(HttpStatus.CREATED).body(res);
+
+	    } catch (BusinessLogicException | ResourceNotFoundException ex) {
+	        logger.error("業務例外", ex);
+	        ApiResponseDto<CenterInfo> res =
+	                ApiResponseDto.clientError(ex.getMessage());
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+
+	    } catch (Exception ex) {
+	        logger.error("想定外例外", ex);
+	        ApiResponseDto<CenterInfo> res =
+	                ApiResponseDto.serverError("登録処理中にエラーが発生しました: " + ex.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+	    }
+	}
+	
 
 	/**
 	 * 検索パラメータのログ出力

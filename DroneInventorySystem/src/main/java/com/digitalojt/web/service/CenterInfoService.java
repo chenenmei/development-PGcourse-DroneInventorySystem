@@ -1,15 +1,18 @@
 package com.digitalojt.web.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import com.digitalojt.web.exception.BusinessLogicException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.digitalojt.web.entity.CenterInfo;
+import com.digitalojt.web.exception.BusinessLogicException;
+import com.digitalojt.web.form.CenterInfoForm;
 import com.digitalojt.web.repository.CenterInfoRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 /**
  * 在庫センター情報画面のサービスクラス
@@ -83,5 +86,64 @@ public class CenterInfoService {
 			logger.error("データベース検索中にエラーが発生しました", e);
 			throw e; // 上位層で処理するためにスローし直す
 		}
+	}
+	
+	// 2025/05/28 追加: 新規登録処理
+	/**
+	 * 在庫センター情報を新規登録する
+	 * 
+	 * <pre>
+	 * 入力値をエンティティに変換
+	 * 業務バリデーション 
+	 * Repository#save で永続化
+	 * 保存済みエンティティを返却
+	 * </pre>
+	 * 
+	 * @param form 画面・API から受け取った入力フォーム
+	 * @return 保存済みの CenterInfo エンティティ
+	 * @throws BusinessLogicException 業務ロジックに違反した場合
+	 */
+	@Transactional
+	public CenterInfo insertCenterInfo(CenterInfoForm form) {
+	    logger.info("新規登録処理開始: centerName={}, region={}, MaxStorageCapacity={}, CurrentStorageCapacity={}",
+	            form.getCenterName(),
+	            form.getRegion(),
+	            form.getMaxStorageCapacity(),
+	            form.getCurrentStorageCapacity());
+
+	    /* ---------- 業務バリデーション ---------- */
+	    if (form.getCurrentStorageCapacity() != null && form.getMaxStorageCapacity() != null
+	            && form.getCurrentStorageCapacity() > form.getMaxStorageCapacity()) {
+	        throw new BusinessLogicException("現在容量は最大容量以下である必要があります。");
+	    }
+
+	    /* ---------- Form → Entity 変換 ---------- */
+	    LocalDateTime now = LocalDateTime.now();
+	    CenterInfo entity = new CenterInfo();
+	    entity.setCenterName(form.getCenterName());
+	    entity.setPostCode(form.getPostCode());
+	    entity.setAddress(form.getAddress());
+	    entity.setPhoneNumber(form.getPhoneNumber());
+	    entity.setManagerName(form.getManagerName());
+	    entity.setMaxStorageCapacity(form.getMaxStorageCapacity());
+	    entity.setCurrentStorageCapacity(form.getCurrentStorageCapacity());
+	    entity.setNotes(form.getNotes());
+	    entity.setOperationalStatus(0);
+	    entity.setDeleteFlag(0);
+	    entity.setCreateDate(now);
+	    entity.setUpdateDate(now);
+
+	    /* ---------- 永続化 ---------- */
+	    CenterInfo saved;
+	    try {
+	        saved = repository.save(entity);
+	        logger.info("新規登録成功: id={}", saved.getCenterId());
+	    } catch (Exception e) {
+	        // ★ ここでスタックトレースを完全出力し、再スロー
+	        logger.error("INSERT FAILED - 保存処理で例外発生", e);
+	        throw e;
+	    }
+
+	    return saved;
 	}
 }
