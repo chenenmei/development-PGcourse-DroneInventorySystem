@@ -6,13 +6,17 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.digitalojt.web.consts.LogMessage;
@@ -26,6 +30,8 @@ import com.digitalojt.web.exception.GlobalExceptionHandler;
 import com.digitalojt.web.exception.ResourceNotFoundException;
 import com.digitalojt.web.form.CenterInfoForm;
 import com.digitalojt.web.service.CenterInfoService;
+import com.digitalojt.web.validation.ValidationGroups.Insert;
+import com.digitalojt.web.validation.ValidationGroups.Update;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -293,6 +299,28 @@ public class CenterInfoController extends AbstractController {
 		
 	}
 	
+	/**
+	 * 更新画面を表示
+	 * URL例: /admin/centerInfo/update?centerId=1
+	 */
+	@GetMapping("/admin/centerInfo/update")
+	public String updateForm(@RequestParam("centerId") int centerId,
+	                         Model model) {
+	    // 画面側で Ajax 用に centerId を渡すだけ。DB 取得は前画面でも OK
+	    model.addAttribute("centerId", centerId);
+	    return "admin/centerInfo/centerinfoupdate";   // テンプレート名と一致させる
+	}
+	
+	/**
+	 * 削除画面（または確認ダイアログ用ページ）を表示
+	 * URL例: /admin/centerInfo/delete?centerId=1
+	 */
+	@GetMapping("/admin/centerInfo/delete")
+	public String deleteForm(@RequestParam("centerId") Long centerId,
+	                         Model model) {
+	    model.addAttribute("centerId", centerId);
+	    return "admin/centerInfo/centerinfodelete";   // 無ければあとで作成
+	}
 	
 	/**
 	 * 在庫センター情報の新規登録（JSON形式）
@@ -314,24 +342,24 @@ public class CenterInfoController extends AbstractController {
 	        produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<ApiResponseDto<CenterInfo>> insert(
-	        @RequestBody @Valid CenterInfoForm form,
+			@RequestBody @Validated(Insert.class) CenterInfoForm form,
 	        BindingResult bindingResult) {
 
 	    logStart(LogMessage.HTTP_POST);
 	    logger.info("在庫センター情報 新規登録API 呼び出し");
 
-	    /* ① バリデーション */
+	    /* バリデーション */
 	    if (bindingResult.hasErrors()) {
 	        logger.warn("バリデーションエラー: {}", bindingResult.getAllErrors());
 	        return GlobalExceptionHandler.handleValidationError(bindingResult);
 	    }
 
 	    try {
-	        /* ② 登録処理 */
+	        /* 登録処理 */
 	        CenterInfo saved = centerInfoService.insertCenterInfo(form);
 	        logger.info("登録成功 ID={}", saved.getCenterId());
 
-	        /* ③ 成功レスポンス */
+	        /* 成功レスポンス */
 	        ApiResponseDto<CenterInfo> res =
 	                ApiResponseDto.success(saved, "センター情報を登録しました");
 	        logEnd(LogMessage.HTTP_POST);
@@ -349,6 +377,83 @@ public class CenterInfoController extends AbstractController {
 	                ApiResponseDto.serverError("登録処理中にエラーが発生しました: " + ex.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 	    }
+	}
+	
+	/**
+     * 在庫センター情報の更新（JSON形式）
+     *
+     * <pre>
+     * - Ajax から JSON ボディで CenterInfoFormを受け取り、
+     *    正常時は更新後の CenterInfo を JSON で返却する。
+     * - バリデーション NG の場合は GlobalExceptionHandler により標準化済みエラーを返す。
+     * - 楽観ロック衝突(ObjectOptimisticLockingFailureException)時は HTTP 409 (Conflict) を返す。
+     * - 想定外エラー時は HTTP 500 (Internal Server Error) を返す。
+     * </pre>
+     *
+     * @param form          フロントから送られてくる入力データ
+     * @param bindingResult バリデーション結果
+     * @return ApiResponseDto
+     *         (成功時: 更新済みエンティティ,
+     *          排他衝突・業務エラー時: エラーメッセージ)
+     */
+	@PutMapping(
+			value = "/admin/centerInfo/update",
+	        consumes = "application/json",
+	        produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<ApiResponseDto<CenterInfo>> update(
+			@RequestBody @Validated(Update.class) CenterInfoForm form,
+			BindingResult bindingResult) {
+		logStart(LogMessage.HTTP_PUT);
+		logger.info("在庫センター情報 更新API 呼び出し");
+		
+		/* バリデーション */
+		if (bindingResult.hasErrors()) {
+			logger.warn("バリデーションエラー: {}", bindingResult.getAllErrors());
+			return GlobalExceptionHandler.handleValidationError(bindingResult);
+		}
+		
+		try {
+			
+			/* 更新処理 */
+			CenterInfo updated = centerInfoService.updateCenterInfo(form);
+			logger.info("更新成功 ID={}", updated.getCenterId());
+			
+			
+			/* 成功レスポンス (200 OK) */
+			ApiResponseDto<CenterInfo> res =
+					ApiResponseDto.success(updated, "センター情報を更新しました");
+			logEnd(LogMessage.HTTP_PUT);
+			return ResponseEntity.ok(res);
+			
+					
+		} catch (ObjectOptimisticLockingFailureException ex) {
+			
+			// 排他制御 (version 不一致) → 409
+			logger.warn("排他エラー", ex);
+			ApiResponseDto<CenterInfo> res =
+					ApiResponseDto.clientError("他のユーザーが更新されました。再読込してやり直してください。");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
+			
+			
+		} catch (BusinessLogicException | ResourceNotFoundException ex) {
+			
+			logger.error("業務例外", ex);
+			ApiResponseDto<CenterInfo> res =
+					ApiResponseDto.clientError(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+			
+			
+		} catch (Exception ex) {
+			
+			logger.error("想定外例外", ex);
+			ApiResponseDto<CenterInfo> res =
+					ApiResponseDto.serverError("更新処理中にエラーが発生しました: " + ex.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+			
+			
+		}
+
 	}
 	
 

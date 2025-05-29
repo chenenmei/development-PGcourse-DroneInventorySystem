@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.digitalojt.web.entity.CenterInfo;
 import com.digitalojt.web.exception.BusinessLogicException;
+import com.digitalojt.web.exception.ResourceNotFoundException;
 import com.digitalojt.web.form.CenterInfoForm;
 import com.digitalojt.web.repository.CenterInfoRepository;
 
@@ -88,7 +90,6 @@ public class CenterInfoService {
 		}
 	}
 	
-	// 2025/05/28 追加: 新規登録処理
 	/**
 	 * 在庫センター情報を新規登録する
 	 * 
@@ -145,5 +146,60 @@ public class CenterInfoService {
 	    }
 
 	    return saved;
+	}
+	
+	/**
+     * 在庫センター情報を更新する
+     * 
+     * <pre>
+     * 1. centerId で既存エンティティ取得（存在しなければ 404）
+     * 2. 業務バリデーション（現在容量 <= 最大容量）
+     * 3. エンティティへ値を上書き
+     * 4. save() で永続化（version 列により楽観ロック）
+     * </pre>
+     * 
+     * @param form 更新入力
+     * @return 更新後エンティティ
+     * @throws BusinessLogicException             業務バリデーション NG
+     * @throws ResourceNotFoundException          該当データなし
+     * @throws ObjectOptimisticLockingFailureException 排他衝突
+     */
+	@Transactional
+    public CenterInfo updateCenterInfo(CenterInfoForm form) {
+		
+		logger.info("更新処理開始: centerId={}, version={}",
+                form.getCenterId(), form.getVersion());
+		
+		/* ---------- 既存データ取得 ---------- */
+		CenterInfo entity = repository.findById(form.getCenterId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "ID=" + form.getCenterId() + " のデータが存在しません"));
+		
+		/* ---------- 業務バリデーション ---------- */
+        if (form.getCurrentStorageCapacity() != null
+                && form.getMaxStorageCapacity() != null
+                && form.getCurrentStorageCapacity() > form.getMaxStorageCapacity()) {
+        	
+        	throw new BusinessLogicException("現在容量は最大容量以下である必要があります。");
+        	
+        }
+        
+        /* ---------- 値の上書き ---------- */
+        entity.setCenterName(form.getCenterName());
+        entity.setPostCode(form.getPostCode());
+        entity.setAddress(form.getAddress());
+        entity.setPhoneNumber(form.getPhoneNumber());
+        entity.setManagerName(form.getManagerName());
+        entity.setMaxStorageCapacity(form.getMaxStorageCapacity());
+        entity.setCurrentStorageCapacity(form.getCurrentStorageCapacity());
+        entity.setNotes(form.getNotes());
+        entity.setUpdateDate(LocalDateTime.now());
+        
+        /* ---------- ④ 永続化 ---------- */
+        CenterInfo saved = repository.save(entity);
+        logger.info("更新完了: id={}, newVersion={}", saved.getCenterId(), saved.getVersion());
+
+        return saved;
+        
 	}
 }

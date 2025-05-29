@@ -2,6 +2,8 @@ package com.digitalojt.web.form;
 
 import com.digitalojt.web.consts.ModelAttributeContents;
 import com.digitalojt.web.validation.CenterInfoFormValidator;
+import com.digitalojt.web.validation.ValidationGroups.Insert;
+import com.digitalojt.web.validation.ValidationGroups.Update;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
@@ -43,6 +45,20 @@ public class CenterInfoForm {
 	 * @return
 	 */
 	
+	/* ---------- 追加：更新用 ---------- */
+	
+	/** 
+	 * センターID（更新用）
+	 */
+	@NotNull(message = "{centerId.required}", groups = Update.class)
+    private Integer centerId;
+    
+    /** 
+	 * バージョン番号（楽観ロック用）
+	 */
+	@NotNull(message = "{version.required}", groups = Update.class)
+    private Integer version;
+	
 	
 	/* ---------- 追加：新規登録用 ---------- */
 	
@@ -69,15 +85,15 @@ public class CenterInfoForm {
 	/**
 	 * 最大容量
 	 */
-	@NotNull(message = "{maxStorageCapacity.required}")
-	@PositiveOrZero(message = "{maxStorageCapacity.positive}")
+	@NotNull(message = "{maxStorageCapacity.required}", groups = {Insert.class, Update.class})
+	@PositiveOrZero(message = "{maxStorageCapacity.positive}", groups = {Insert.class, Update.class})
 	private Integer maxStorageCapacity;
 	
 	/**
 	 * 現在容量
 	 */
-	@NotNull(message = "{currentStorageCapacity.required}")
-	@PositiveOrZero(message = "{currentStorageCapacity.positive}")
+	@NotNull(message = "{currentStorageCapacity.required}", groups = {Insert.class, Update.class})
+	@PositiveOrZero(message = "{currentStorageCapacity.positive}", groups = {Insert.class, Update.class})
 	private Integer currentStorageCapacity;
 	
 	/**
