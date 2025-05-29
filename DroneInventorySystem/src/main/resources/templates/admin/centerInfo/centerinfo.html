@@ -22,17 +22,6 @@
         margin-right: 1rem;
       }
       
-      /* デバッグ用スタイル */
-      .debug-info {
-        margin-top: 10px;
-        padding: 8px;
-        background-color: #f8f9fc;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-family: monospace;
-        font-size: 12px;
-        color: #666;
-      }
     </style>
     
     <!-- 初期データをJSON形式で埋め込む -->
@@ -151,23 +140,6 @@
           <p class="mb-0">該当するデータはありません。</p>
         </div>
         
-        <!-- デバッグ情報 -->
-        <div class="debug-info mt-4">
-          <h6>システム状態（デバッグ用）:</h6>
-          <div><strong>読み込み状態:</strong> <span x-text="isLoading ? '読み込み中' : '完了'"></span></div>
-          <div><strong>AJAX検索:</strong> <span x-text="isAjaxSearch ? '検索モード' : '初期表示'"></span></div>
-          <div><strong>初期データ件数:</strong> <span x-text="centerInfoList.length"></span></div>
-          <div><strong>検索結果件数:</strong> <span x-text="searchResults.length"></span></div>
-          <div><strong>表示データ件数:</strong> <span x-text="displayData.length"></span></div>
-          <div>
-            <button class="btn btn-sm btn-secondary mt-2" @click="resetState()">状態リセット</button>
-            <button class="btn btn-sm btn-primary mt-2 ml-2" @click="reloadData()">初期データ再読込</button>
-            <button class="btn btn-sm btn-danger mt-2 ml-2" @click="location.reload()">ページ再読込</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  
     <!-- Alpine.jsコンポーネント定義 -->
     <script>
       document.addEventListener('alpine:init', () => {
