@@ -11,8 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -316,10 +318,8 @@ public class CenterInfoController extends AbstractController {
 	 * URL例: /admin/centerInfo/delete?centerId=1
 	 */
 	@GetMapping("/admin/centerInfo/delete")
-	public String deleteForm(@RequestParam("centerId") Long centerId,
-	                         Model model) {
-	    model.addAttribute("centerId", centerId);
-	    return "admin/centerInfo/centerinfodelete";   // 無ければあとで作成
+	public String deleteForm(@RequestParam("centerId") int centerId,Model model) {
+		return "admin/centerInfo/centerinfodelete";
 	}
 	
 	/**
@@ -456,6 +456,25 @@ public class CenterInfoController extends AbstractController {
 
 	}
 	
+    /**
+     * 在庫センター情報を削除します（非同期）。
+     *
+     * @param id 削除対象のセンターID
+     * @return JSON 形式の ApiResponseDto<Void>
+     */
+	@DeleteMapping("/admin/centerInfo/delete/{id}")
+	@ResponseBody
+	public ResponseEntity<ApiResponseDto<Void>> deleteCenterInfo(
+			@PathVariable int id,
+			@RequestParam("version") int version) {
+		
+		// Service 層に削除処理を委譲
+		ApiResponseDto<Void> response = centerInfoService.deleteCenterInfo(id, version);
+		
+		// 結果に応じて HTTP ステータスを設定
+		HttpStatus status = response.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(response, status);
+	}
 
 	/**
 	 * 検索パラメータのログ出力

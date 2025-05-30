@@ -11,6 +11,9 @@
     <!-- Alpine.jsをCDNから読み込み -->
     <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
     
+    <!-- CSRF対策用のトークン（不正リクエスト防止）をhidden項目として埋め込む -->
+    <input type="hidden" id="csrfToken" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    
     <style>
       /* フォームレイアウト調整 */
       .form-inline label {
@@ -22,18 +25,17 @@
         margin-right: 1rem;
       }
       
-      /* デバッグ用スタイル */
-      .debug-info {
-        margin-top: 10px;
-        padding: 8px;
-        background-color: #f8f9fc;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-family: monospace;
-        font-size: 12px;
-        color: #666;
-      }
     </style>
+    <style>
+		.btn-custom-orange{
+			background-color: #FFC999;
+			color: white;
+			border: none;
+		}
+		.btn-custom-orange:hover{
+			ackground-color: #fcb685;
+		}
+	</style>
     
     <!-- 初期データをJSON形式で埋め込む -->
     <script th:inline="javascript">
@@ -129,44 +131,49 @@
                 <th>管理者名</th>
                 <th>最大容量(㎥)</th>
                 <th>現在容量(㎥)</th>
+                <th>削除</th>
               </tr>
             </thead>
             <tbody>
               <template x-for="(item, index) in displayData" :key="index">
                 <tr>
-                  <td x-text="item.centerName || ''"></td>
+                  <!-- センター名リンク -->
+                  <td>
+                    <a href="#" @click.prevent="handleCenterClick(item)" x-text="item.centerName"></a>
+                  </td>
                   <td x-text="item.address || ''"></td>
                   <td x-text="item.phoneNumber || ''"></td>
                   <td x-text="item.managerName || ''"></td>
                   <td x-text="item.maxStorageCapacity || ''"></td>
                   <td x-text="item.currentStorageCapacity || ''"></td>
+                  <!-- 削除ラジオ -->
+                  <td>
+					  <input  type="checkbox"
+					  x-bind:checked="selectedForDelete === item.centerId"
+					  x-on:click.stop="toggleDelete(item)"
+					  />
+				  </td>
                 </tr>
               </template>
             </tbody>
           </table>
         </div>
         
+        <!-- 新規登録ボタン追加 -->
+        <dir class="d-flex justify-content-end mt-3" x-data>
+			<button
+			type="button" class="btn btn-custom-orange" onclick="window.location.href='/admin/centerInfo/insert'">
+			新規登録
+			</button>
+			
+		</dir>
+
+        
         <!-- 検索結果がない場合のメッセージ -->
         <div x-show="!isLoading && isResultEmpty" class="alert alert-info mt-3">
           <p class="mb-0">該当するデータはありません。</p>
         </div>
         
-        <!-- デバッグ情報 -->
-        <div class="debug-info mt-4">
-          <h6>システム状態（デバッグ用）:</h6>
-          <div><strong>読み込み状態:</strong> <span x-text="isLoading ? '読み込み中' : '完了'"></span></div>
-          <div><strong>AJAX検索:</strong> <span x-text="isAjaxSearch ? '検索モード' : '初期表示'"></span></div>
-          <div><strong>初期データ件数:</strong> <span x-text="centerInfoList.length"></span></div>
-          <div><strong>検索結果件数:</strong> <span x-text="searchResults.length"></span></div>
-          <div><strong>表示データ件数:</strong> <span x-text="displayData.length"></span></div>
-          <div>
-            <button class="btn btn-sm btn-secondary mt-2" @click="resetState()">状態リセット</button>
-            <button class="btn btn-sm btn-primary mt-2 ml-2" @click="reloadData()">初期データ再読込</button>
-            <button class="btn btn-sm btn-danger mt-2 ml-2" @click="location.reload()">ページ再読込</button>
-          </div>
-        </div>
-      </div>
-    </div>
   
     <!-- Alpine.jsコンポーネント定義 -->
     <script>
@@ -192,6 +199,9 @@
           },
           centerInfoList: [],
           searchResults: [],
+          
+          //** 削除モード判定用：クリックされた行の centerId を保持 */
+          selectedForDelete: 0,
           
           // 初期化 (自動実行)
           init() {
@@ -365,13 +375,17 @@
               const apiUrl = '/admin/centerInfo/search';
               console.log('API呼び出し:', `${apiUrl}?${params.toString()}`);
               
+              // 取得CSRF token
+              const csrfToken = document.getElementById('csrfToken')?.value;
+              
               // API呼び出し
               const response = await fetch(`${apiUrl}?${params.toString()}`, {
                 method: 'GET',
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json',
-                  'X-Requested-With': 'XMLHttpRequest' // Ajaxリクエストと識別
+                  'X-Requested-With': 'XMLHttpRequest', // Ajaxリクエストと識別
+                  'X-CSRF-TOKEN': csrfToken // CSRFトークンをリクエストヘッダーに設定
                 },
                 credentials: 'same-origin' // 同一オリジンのみCookieを送信
               });
@@ -428,7 +442,46 @@
             } finally {
               this.isLoading = false;
             }
-          }
+          },
+          
+          // 更新用データ保存
+          storeForUpdate(item) {
+			  sessionStorage.setItem('selectedCenterInfo', JSON.stringify(item));
+		  },
+          
+          // 削除用データ保存
+          storeForDelete(item) {
+			  sessionStorage.setItem('selectedCenterInfoToDelete', JSON.stringify(item));
+		  },
+		  
+		  toggleDelete(item) {
+			  this.selectedForDelete =
+			    this.selectedForDelete === item.centerId ? 0 : item.centerId;
+		  },
+          
+          // クリックで画面遷移
+          handleCenterClick(item) {
+			  const id = item.centerId;
+			  if (this.selectedForDelete === id) {
+				  
+				  sessionStorage.setItem(
+					  'selectedCenterInfoToDelete',
+					  JSON.stringify(item)
+				  );
+				  
+				  // 削除モード
+				  location.href = `/admin/centerInfo/delete?centerId=${id}`;
+				  
+				  } else {
+					  
+					  sessionStorage.setItem(
+						  'selectedCenterInfo',
+						  JSON.stringify(item)
+					  );
+					  // 更新モード
+					  location.href = `/admin/centerInfo/update?centerId=${id}`;
+					  }
+				}
         }))
       })
     </script>

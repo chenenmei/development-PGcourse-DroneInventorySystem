@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
+import com.digitalojt.web.dto.ApiResponseDto;
 import com.digitalojt.web.entity.CenterInfo;
 import com.digitalojt.web.exception.BusinessLogicException;
 import com.digitalojt.web.exception.ResourceNotFoundException;
@@ -202,4 +203,50 @@ public class CenterInfoService {
         return saved;
         
 	}
+	
+	/**
+     * 在庫センター情報を削除する
+     *
+     * <pre>
+     * 1. centerId で既存エンティティ取得（存在しなければ ResourceNotFoundException）
+     * 2. deleteById() で削除実行（外部キー制約等で失敗した場合は BusinessLogicException）
+     * </pre>
+     *
+     * @param id 削除対象のセンターID
+     * @return ApiResponseDto<Void>（success=true/false, メッセージ含む）
+     * @throws ResourceNotFoundException 削除対象が存在しない場合
+     * @throws BusinessLogicException    関連データ制約などで削除失敗の場合
+     */
+	@Transactional
+	public ApiResponseDto<Void> deleteCenterInfo(int id, int version) {
+	    logger.info("削除処理開始: centerId={}, version={}", id, version);
+	    
+	 // 既存データ取得
+	    CenterInfo entity = repository.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException(
+	                    "ID=" + id + " のデータが存在しません"));
+	    
+	 // 排他制御：version不一致
+	    if (!entity.getVersion().equals(Long.valueOf(version))) {
+	    	logger.warn("排他エラー：version不一致 centerId={}, DB版version={}, 画面版version={}",
+	    			id, entity.getVersion(), version);
+	    	throw new ObjectOptimisticLockingFailureException(CenterInfo.class, id);
+	    }
+
+	    try {
+	    	
+	    	// entity指定でdelete（versionがWHERE句に反映される）
+	        repository.delete(entity); 
+	        logger.info("削除成功: centerId={}", id);
+	        return ApiResponseDto.<Void>success(null, "削除が完了しました。");
+	        
+	    } catch (Exception e) {
+	    	
+	        logger.error("DELETE FAILED - 削除処理で例外発生", e);
+	        throw new BusinessLogicException(
+	                "削除に失敗しました。関連データが存在する可能性があります。");
+	        
+	    }
+	}
+	
 }

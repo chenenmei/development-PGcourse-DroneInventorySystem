@@ -36,7 +36,7 @@
         <div class="row mb-3">
           <label class="col-md-3 col-form-label required">センター名</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" x-model="form.centerName"
+            <input type="text" class="form-control" maxlength="20" x-model="form.centerName"
                    @blur="validateField('centerName')" required>
             <div class="text-danger" x-text="errors.centerName"></div>
           </div>
@@ -45,7 +45,7 @@
         <div class="row mb-3">
           <label class="col-md-3 col-form-label required">郵便番号</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" x-model="form.postCode"
+            <input type="text" class="form-control" maxlength="10" x-model="form.postCode"
                    @blur="validateField('postCode')" required>
             <div class="text-danger" x-text="errors.postCode"></div>
           </div>
@@ -63,7 +63,7 @@
         <div class="row mb-3">
           <label class="col-md-3 col-form-label required">電話番号</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" x-model="form.phoneNumber"
+            <input type="text" class="form-control" maxlength="20" x-model="form.phoneNumber"
                    @blur="validateField('phoneNumber')" required>
             <div class="text-danger" x-text="errors.phoneNumber"></div>
           </div>
@@ -98,7 +98,7 @@
         <div class="row mb-3">
           <label class="col-md-3 col-form-label required">最大容量 (m³)</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" x-model="form.maxStorageCapacity"
+            <input type="text" class="form-control" maxlength="10" x-model="form.maxStorageCapacity"
                    @blur="validateField('maxStorageCapacity')" required>
             <div class="text-danger" x-text="errors.maxStorageCapacity"></div>
           </div>
@@ -107,7 +107,7 @@
         <div class="row mb-3">
           <label class="col-md-3 col-form-label required">現在容量 (m³)</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" x-model="form.currentStorageCapacity"
+            <input type="text" class="form-control" maxlength="10" x-model="form.currentStorageCapacity"
                    @blur="validateField('currentStorageCapacity')" required>
             <div class="text-danger" x-text="errors.currentStorageCapacity"></div>
           </div>

@@ -66,7 +66,7 @@ public class CenterInfoForm {
 	/**
 	 * 住所
 	 */
-	@NotBlank(message = "{address.required}")
+	@NotBlank(message = "{address.required}", groups = {Insert.class, Update.class})
 	@Size(max = 100, message = "{address.length}")
 	private String address; 
 	
