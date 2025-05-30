@@ -33,7 +33,7 @@ public class UrlConsts {
 	public static final String  CENTER_INFO = "/admin/centerInfo";
 
 	// 在庫センター情報画面初期表示
-	public static final String  CENTER_INFO_INDEX = "/admin/centerInfo/centerinfo";
+	public static final String  CENTER_INFO_INDEX = "admin/centerInfo/centerinfo";
 	
 	// 在庫センター情報画面 検索
 	public static final String CENTER_INFO_SEARCH = "/admin/centerInfo/search";

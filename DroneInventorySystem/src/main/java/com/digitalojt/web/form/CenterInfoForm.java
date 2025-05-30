@@ -39,11 +39,8 @@ public class CenterInfoForm {
 	 * @return
 	 */
 	@PostConstruct
-	public Integer init() {
-
-		if (storageCapacityTo != null && storageCapacityFrom == null) {
-			return ModelAttributeContents.INITIAL_CAPACITY_FROM;
-		}
-		return storageCapacityFrom;
+	public void init() {
+		// この処理は必要ない場合があります。空のメソッドにします。
+		// 自動初期化が問題を引き起こす可能性があります。
 	}
 }
