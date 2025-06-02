@@ -161,6 +161,9 @@ function centerUpdate(){
 		const cached = sessionStorage.getItem('selectedCenterInfo');
 		if(cached){
 			Object.assign(this.form, JSON.parse(cached));
+			if(this.form.operationalStatus != null) {
+				this.form.status = String(this.form.operationalStatus);
+			}
 			sessionStorage.removeItem('selectedCenterInfo');
 			return;
 		}

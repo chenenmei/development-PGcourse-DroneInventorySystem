@@ -14,6 +14,7 @@ import com.digitalojt.web.exception.BusinessLogicException;
 import com.digitalojt.web.exception.ResourceNotFoundException;
 import com.digitalojt.web.form.CenterInfoForm;
 import com.digitalojt.web.repository.CenterInfoRepository;
+import com.digitalojt.web.repository.StockRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,9 @@ public class CenterInfoService {
 
 	/** センター情報テーブル リポジトリー */
 	private final CenterInfoRepository repository;
+	
+	/** 在庫情報リポジトリ（在庫有無チェック用） */
+	private final StockRepository stockRepository;
 
 	/**
 	 * 在庫センター情報を全建検索で取得
@@ -208,8 +212,9 @@ public class CenterInfoService {
      * 在庫センター情報を削除する
      *
      * <pre>
-     * 1. centerId で既存エンティティ取得（存在しなければ ResourceNotFoundException）
-     * 2. deleteById() で削除実行（外部キー制約等で失敗した場合は BusinessLogicException）
+     * 削除前にStockRepositoryで在庫データ有無をチェック
+     * 在庫が存在する場合は削除不可＆エラーメッセージ返却
+     * 在庫が存在しない場合のみ削除を実行
      * </pre>
      *
      * @param id 削除対象のセンターID
@@ -220,6 +225,15 @@ public class CenterInfoService {
 	@Transactional
 	public ApiResponseDto<Void> deleteCenterInfo(int id, int version) {
 	    logger.info("削除処理開始: centerId={}, version={}", id, version);
+	    
+	 // 在庫有無チェック
+	    long stockCount = stockRepository.countByCenterId(id);
+	    if (stockCount > 0) {
+	    	
+	    	// 在庫データが1件以上存在する場合は削除不可
+	    	logger.warn("在庫が存在するため、センター情報を削除できません: centerId={}", id);
+	    	return ApiResponseDto.clientError("在庫が存在するため、センター情報を削除できません。");
+	    }
 	    
 	 // 既存データ取得
 	    CenterInfo entity = repository.findById(id)
@@ -238,13 +252,13 @@ public class CenterInfoService {
 	    	// entity指定でdelete（versionがWHERE句に反映される）
 	        repository.delete(entity); 
 	        logger.info("削除成功: centerId={}", id);
-	        return ApiResponseDto.<Void>success(null, "削除が完了しました。");
+	        return ApiResponseDto.<Void>success(null, "削除処理を正常に終了しました。");
 	        
 	    } catch (Exception e) {
 	    	
 	        logger.error("DELETE FAILED - 削除処理で例外発生", e);
 	        throw new BusinessLogicException(
-	                "削除に失敗しました。関連データが存在する可能性があります。");
+	                "削除処理を異常に終了しました。");
 	        
 	    }
 	}

@@ -109,7 +109,7 @@
         <div class="row mb-4">
           <label class="col-md-3 col-form-label">備考</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" x-model="form.Notes" disabled>
+            <input type="text" class="form-control" x-model="form.notes" disabled>
           </div>
         </div>
 
@@ -137,7 +137,7 @@ function centerDelete() {
       status: '',
       maxStorageCapacity: '',
       currentStorageCapacity: '',
-      Notes: '',
+      notes: '',
       version: ''
     },
     
@@ -151,10 +151,10 @@ function centerDelete() {
         this.form.address = data.address;
         this.form.phoneNumber = data.phoneNumber;
         this.form.managerName = data.managerName;
-        this.form.status = data.status;
+        this.form.status = data.operationalStatus != null ? String(data.operationalStatus) : '';
         this.form.maxStorageCapacity = data.maxStorageCapacity;
         this.form.currentStorageCapacity = data.currentStorageCapacity;
-        this.form.Notes = data.notes;
+        this.form.notes = data.notes;
         this.form.version = data.version;
       }
     },
@@ -181,7 +181,7 @@ function centerDelete() {
           alert('削除が完了しました。');
           location.href = '/admin/centerInfo';
         } else {
-          alert('削除に失敗しました。');
+          alert(res.message || '削除が失敗しました。');
         }
       } catch (e) {
         alert('通信エラーが発生しました。');

@@ -5,7 +5,6 @@ import com.digitalojt.web.validation.CenterInfoFormValidator;
 import com.digitalojt.web.validation.ValidationGroups.Insert;
 import com.digitalojt.web.validation.ValidationGroups.Update;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -105,15 +104,7 @@ public class CenterInfoForm {
 	/**
 	 * 備考
 	 */
-	@Size(max = 200, message = "{Notes.length}")
-	private String Notes; 
+	@Size(max = 200, message = "{notes.length}")
+	private String notes; 
 	
-	
-	
-	
-	@PostConstruct
-	public void init() {
-		// この処理は必要ない場合があります。空のメソッドにします。
-		// 自動初期化が問題を引き起こす可能性があります。
-	}
 }

@@ -116,7 +116,7 @@
         <div class="row mb-4">
           <label class="col-md-3 col-form-label">備考</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" x-model="form.Notes">
+            <input type="text" class="form-control" x-model="form.notes">
           </div>
         </div>
 
@@ -136,7 +136,7 @@ function centerForm() {
   return {
     form: {
       centerName:'', postCode:'', address:'', phoneNumber:'', managerName:'',
-      status:'', maxStorageCapacity:'', currentStorageCapacity:'', Notes:''
+      status:'', maxStorageCapacity:'', currentStorageCapacity:'', notes:''
     },
     errors:{},
     validateField(field){
