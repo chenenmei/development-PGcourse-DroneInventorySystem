@@ -56,7 +56,7 @@ public class CenterInfoForm {
 	 * バージョン番号（楽観ロック用）
 	 */
 	@NotNull(message = "{version.required}", groups = Update.class)
-    private Integer version;
+    private Long version;
 	
 	
 	/* ---------- 追加：新規登録用 ---------- */

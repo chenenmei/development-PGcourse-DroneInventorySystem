@@ -2,6 +2,7 @@ package com.digitalojt.web.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,6 +181,12 @@ public class CenterInfoService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "ID=" + form.getCenterId() + " のデータが存在しません"));
 		
+		/* ---------- フォームの version と DB の version が一致するか比較  ---------- */
+		if (!Objects.equals(entity.getVersion(), form.getVersion())) {
+			throw new ObjectOptimisticLockingFailureException(
+					CenterInfo.class, form.getCenterId());
+		}
+		
 		/* ---------- 業務バリデーション ---------- */
         if (form.getCurrentStorageCapacity() != null
                 && form.getMaxStorageCapacity() != null
@@ -223,7 +230,7 @@ public class CenterInfoService {
      * @throws BusinessLogicException    関連データ制約などで削除失敗の場合
      */
 	@Transactional
-	public ApiResponseDto<Void> deleteCenterInfo(int id, int version) {
+	public ApiResponseDto<Void> deleteCenterInfo(int id, long version) {
 	    logger.info("削除処理開始: centerId={}, version={}", id, version);
 	    
 	 // 在庫有無チェック
@@ -236,9 +243,8 @@ public class CenterInfoService {
 	    }
 	    
 	 // 既存データ取得
-	    CenterInfo entity = repository.findById(id)
-	            .orElseThrow(() -> new ResourceNotFoundException(
-	                    "ID=" + id + " のデータが存在しません"));
+	    CenterInfo entity = repository.findByCenterIdAndVersion(id, version)
+	    		.orElseThrow(() -> new ObjectOptimisticLockingFailureException(CenterInfo.class, id));
 	    
 	 // 排他制御：version不一致
 	    if (!entity.getVersion().equals(Long.valueOf(version))) {

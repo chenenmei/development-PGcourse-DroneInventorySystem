@@ -466,14 +466,24 @@ public class CenterInfoController extends AbstractController {
 	@ResponseBody
 	public ResponseEntity<ApiResponseDto<Void>> deleteCenterInfo(
 			@PathVariable int id,
-			@RequestParam("version") int version) {
+			@RequestParam("version") long version) {
 		
-		// Service 層に削除処理を委譲
-		ApiResponseDto<Void> response = centerInfoService.deleteCenterInfo(id, version);
-		
-		// 結果に応じて HTTP ステータスを設定
-		HttpStatus status = response.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(response, status);
+		try {
+			// Service に削除を委譲
+			ApiResponseDto<Void> response = centerInfoService.deleteCenterInfo(id, version);
+			
+			HttpStatus status = response.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+			return new ResponseEntity<>(response, status);
+
+		}catch (ObjectOptimisticLockingFailureException ex) {
+			
+			// 排他衝突 → 409 を返却
+			ApiResponseDto<Void> res = ApiResponseDto.clientError(
+					 "他のユーザーが先に削除しました。再読込してやり直してください。");
+			return new ResponseEntity<>(res, HttpStatus.CONFLICT);
+			
+		}
+
 	}
 
 	/**
