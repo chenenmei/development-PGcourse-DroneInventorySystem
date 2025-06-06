@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  
+  <!-- ★ CSRF トークンとヘッダー名を Thymeleaf で埋め込む -->
+  <meta name="_csrf"        th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+  
+  <title>在庫センター情報（登録）</title>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+  <script defer
+    src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <style>
+    .required::after { content: '＊'; color: #dc3545; margin-left: 2px; }
+    .form-control:invalid { border-color:#dc3545; }
+    .text-danger { font-size: .9rem; }
+    .btn-custom-orange { background:#ffba79; color:#fff; }
+    .btn-custom-orange:hover { background:#ffa85a; }
+  </style>
+</head>
+
+<body class="bg-light">
+<div class="container py-4" x-data="centerForm()">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="mb-3">在庫センター情報 <small class="text-muted">（登録）</small></h4>
+      <p class="mb-4"><span class="text-danger fw-bold">＊</span>は必須項目です</p>
+
+      <!-- ========== 登録フォーム ========== -->
+      <form @submit.prevent="submitForm" class="needs-validation" novalidate>
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">センター名</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" maxlength="20" x-model="form.centerName"
+                   @blur="validateField('centerName')" required>
+            <div class="text-danger" x-text="errors.centerName"></div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">郵便番号</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" maxlength="10" x-model="form.postCode"
+                   @blur="validateField('postCode')" required>
+            <div class="text-danger" x-text="errors.postCode"></div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">住所</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" x-model="form.address"
+                   @blur="validateField('address')" required>
+            <div class="text-danger" x-text="errors.address"></div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">電話番号</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" maxlength="20" x-model="form.phoneNumber"
+                   @blur="validateField('phoneNumber')" required>
+            <div class="text-danger" x-text="errors.phoneNumber"></div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">管理者名</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" x-model="form.managerName"
+                   @blur="validateField('managerName')" required>
+            <div class="text-danger" x-text="errors.managerName"></div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">稼働ステータス</label>
+          <div class="col-md-9 d-flex align-items-center gap-4">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="stat1" value="1"
+                     x-model="form.status" @change="validateField('status')" required>
+              <label class="form-check-label" for="stat1">稼働</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="stat0" value="0"
+                     x-model="form.status" @change="validateField('status')">
+              <label class="form-check-label" for="stat0">停止</label>
+            </div>
+            <div class="text-danger" x-text="errors.status"></div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">最大容量 (m³)</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" maxlength="10" x-model="form.maxStorageCapacity"
+                   @blur="validateField('maxStorageCapacity')" required>
+            <div class="text-danger" x-text="errors.maxStorageCapacity"></div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-md-3 col-form-label required">現在容量 (m³)</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" maxlength="10" x-model="form.currentStorageCapacity"
+                   @blur="validateField('currentStorageCapacity')" required>
+            <div class="text-danger" x-text="errors.currentStorageCapacity"></div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <label class="col-md-3 col-form-label">備考</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" x-model="form.notes">
+          </div>
+        </div>
+
+        <!-- 送信ボタン -->
+        <div class="d-flex justify-content-between">
+          <a href="/admin/centerInfo" class="btn btn-secondary">キャンセル</a>
+          <button type="submit" class="btn btn-custom-orange">登録</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Alpine.js ===== -->
+<script>
+function centerForm() {
+  return {
+    form: {
+      centerName:'', postCode:'', address:'', phoneNumber:'', managerName:'',
+      status:'', maxStorageCapacity:'', currentStorageCapacity:'', notes:''
+    },
+    errors:{},
+    validateField(field){
+  const v = this.form[field]?.trim();
+
+  /* --- 必須＆数値チェック --- */
+  if (['centerName','postCode','address','phoneNumber','managerName','status']
+        .includes(field)){
+    this.errors[field] = v ? '' : '必須項目です';
+  }
+
+  if (['maxStorageCapacity','currentStorageCapacity'].includes(field)){
+    if (!v){
+      this.errors[field] = '必須項目です';
+    } else if (!/^\d+$/.test(v)){
+      this.errors[field] = '数字で入力してください';
+    } else {
+      this.errors[field] = '';
+    }
+  }
+
+  /* --- クロスチェック (最大 ≥ 現在) --- */
+  if (this.form.maxStorageCapacity && this.form.currentStorageCapacity){
+    const max = Number(this.form.maxStorageCapacity);
+    const cur = Number(this.form.currentStorageCapacity);
+
+    if (cur > max){
+      this.errors.currentStorageCapacity = '現在容量は最大容量を超えられません';
+      this.errors.maxStorageCapacity    = '最大容量を現在容量以上にしてください';
+    } else {
+      // 二つとも数値でかつ条件を満たせばエラー解除
+      if (!/^\d+$/.test(this.form.currentStorageCapacity) === false){
+        this.errors.currentStorageCapacity = '';
+      }
+      if (!/^\d+$/.test(this.form.maxStorageCapacity) === false){
+        this.errors.maxStorageCapacity = '';
+      }
+    }
+  }
+},
+
+    validateAll(){
+		Object.keys(this.form).forEach(f => this.validateField(f));
+		return Object.values(this.errors).every(e => e === '');
+},
+
+    async submitForm(){
+      if(!this.validateAll()) return;
+      if(!confirm('登録しますか？')) return;
+      try{
+		  
+		/* === CSRF 情報を meta から取得 === */
+		const csrfToken  = document.querySelector('meta[name="_csrf"]').content;
+		const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+		
+        const response = await fetch('/admin/centerInfo/insert',{
+          method:'POST',
+          credentials: 'same-origin',
+          headers: {
+			  'Content-Type': 'application/json',
+			  [csrfHeader]: csrfToken
+			  },
+          body:JSON.stringify(this.form)
+        });
+        const res=await response.json();
+        if(res.success){
+          alert('登録が完了しました。');
+          location.href='/admin/centerInfo';
+        }else{
+          this.errors=res.errors||{};
+        }
+      }catch(e){ alert('登録が失敗しました'); }
+    }
+  }
+}
+</script>
+</body>
+</html>

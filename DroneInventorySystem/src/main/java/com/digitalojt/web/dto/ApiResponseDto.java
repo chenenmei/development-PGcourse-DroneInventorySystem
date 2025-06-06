@@ -94,6 +94,13 @@ public class ApiResponseDto<T> {
                 .errors(errors)
                 .build();
     }
+    
+    /**
+     * 2025/05/28 追加：クライアントエラー（エラー詳細なし）を作成するファクトリーメソッド
+     */
+    public static <T> ApiResponseDto<T> clientError(String message) {
+    	return clientError(message, java.util.Collections.emptyList());
+    }
 
     /**
      * サーバーエラー応答を作成する静的ファクトリーメソッド
