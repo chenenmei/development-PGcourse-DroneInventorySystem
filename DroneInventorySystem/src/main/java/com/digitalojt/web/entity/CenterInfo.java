@@ -2,14 +2,18 @@ package com.digitalojt.web.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.Comment;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
+import jakarta.persistence.Version;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * センター情報Entity
@@ -17,17 +21,25 @@ import lombok.Data;
  * @author dotlife
  *
  */
+
+/**
+ * 在庫センター情報エンティティ
+ * 2025/05/29 変更:
+ *   - 楽観ロック用フィールド version を追加（@Version）
+ */
 @Data
 @Entity
 @Table(name = "center_info")
+@Getter
+@Setter
 public class CenterInfo {
 
 	/**
-	 * センターID
+	 * センターID（主キー、自動採番）
 	 */
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "center_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@Column(name = "center_id")
 	private int centerId;
 	
 	/**
@@ -70,13 +82,13 @@ public class CenterInfo {
 	 * 最大容量
 	 */
     @Column(name = "max_storage_capacity", nullable = false)
-	private String  maxStorageCapacity;
+	private Integer maxStorageCapacity;
 	
 	/**
 	 * 現在容量
 	 */
     @Column(name = "current_storage_capacity", nullable = false)
-	private String currentStorageCapacity;
+	private Integer currentStorageCapacity;
     
     /**
      * 備考
@@ -101,4 +113,19 @@ public class CenterInfo {
      */
     @Column(name = "update_date", nullable = false)
     private LocalDateTime updateDate;
+    
+ // ================================
+    // 2025/05/29 追加開始 - 排他制御
+    // ================================
+    /**
+     * バージョン番号（楽観ロック用）
+     * <p>
+     * 更新時に JPA が自動でインクリメントし、<br>
+     * WHERE 句に version = ? が付与されることで
+     * 競合更新を検知します。
+     */
+    @Version
+    @Column(name = "version", nullable = false)
+    @Comment("排他制御用バージョン番号")
+    private Long version;
 }

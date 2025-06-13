@@ -1,0 +1,48 @@
+sequenceDiagram
+    participant User as ユーザー
+    participant Frontend as フロントエンド(Alpine.js)
+    participant Controller as CenterInfoController
+    participant Service as CenterInfoService
+    participant Repository as CenterInfoRepository
+    participant DB as 在庫センター情報テーブル
+
+    alt 同期処理（画面遷移）
+        User->>Controller: POST /admin/centerInfo/register（フォーム送信）
+        Controller->>Service: saveCenterInfo(form)
+        Service->>Repository: DB保存実行
+        Repository->>DB: INSERT center_info
+        DB-->>Repository: 処理成功
+        Repository-->>Service: 成功
+        Service-->>Controller: 成功
+        Controller-->>User: redirect /admin/centerInfo/index（一覧画面へ）
+    else 非同期処理（Ajax）
+        User->>Frontend: 入力フォームにデータを入力
+        Frontend->>Frontend: 入力チェック（リアルタイム：必須／桁数／数値）
+        alt 入力不正（クライアント側）
+            Frontend-->>User: 入力エラー即時表示
+        else 入力正常
+            User->>Frontend: 新規登録ボタン押下
+            Frontend->>Controller: Ajax POST /admin/centerInfo/insert
+            Controller->>Service: saveCenterInfo(form)
+            Service->>Repository: DB保存
+            Repository->>DB: INSERT center_info
+            DB-->>Repository: 処理成功
+            Repository-->>Service: 成功
+            Service-->>Controller: 結果JSON
+            alt HTTP 200 OK
+                Controller-->>Frontend: 登録成功レスポンス
+                Frontend-->>User: 「登録完了」ポップアップ
+            else HTTP 400（バリデーションエラー）
+                Controller-->>Frontend: エラー詳細JSON
+                Frontend-->>User: フォーム入力エラー表示
+            else HTTP 500（サーバーエラー）
+                Controller-->>Frontend: エラーメッセージ返却
+                Frontend-->>User: サーバーエラー表示
+            end
+
+            alt 通信失敗
+                Frontend->>Frontend: catch(error)
+                Frontend-->>User: 「通信に失敗しました」ポップアップ表示
+            end
+        end
+    end
